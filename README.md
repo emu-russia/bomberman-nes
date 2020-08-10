@@ -1,9 +1,9 @@
 ![JPG](/imgstore/whc4f9a3ebbbf486.jpg)
 
-Source code of NES game Bomberman<br>
-<br>
-Get sources from SVN or Downloads and run MAKE.BAT to build .NES file.<br>
-<br>
-Comments are on russian, sorry ))<br>
-<br>
+# Source code of NES game Bomberman
+
+Get sources from Git and run MAKE.BAT to build .NES file.
+
+Comments are on russian, sorry ))
+
 Enjoy!
