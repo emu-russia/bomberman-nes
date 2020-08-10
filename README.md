@@ -1,4 +1,4 @@
-<img src='http://ogamespec.com/imgstore/whc4f9a3ebbbf486.jpg'>
+![JPG](/imgstore/whc4f9a3ebbbf486.jpg)
 
 Source code of NES game Bomberman<br>
 <br>
