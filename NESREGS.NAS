@@ -1,4 +1,4 @@
-; Регистры NES
+; NES registers
 
 PPU_CTRL_REG1       EQU $2000
 PPU_CTRL_REG2       EQU $2001

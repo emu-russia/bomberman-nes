@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ROWLEN      16                      // Байт на строку
-#define HEX1        "$"                     // Префикс HEX-чисел (0x0A)
-#define HEX2        ""                      // Суффик HEX-чисел (0Ah)
-#define LINEPRE     "    BYTE    "          // Префикс линии (обычно директива ассемблера типа DB)
+#define ROWLEN      16                      // Byte per line
+#define HEX1        "$"                     // HEX number prefix (0x0A)
+#define HEX2        ""                      // Suffix of HEX numbers (0Ah)
+#define LINEPRE     "    BYTE    "          // Line prefix (usually an assembler directive of type DB)
 
 void usage (void)
 {
