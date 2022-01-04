@@ -4,6 +4,6 @@
 
 Get sources from Git and run MAKE.BAT to build .NES file.
 
-Comments are on russian, sorry ))
+The excellent DASM assembler, by Matthew Dillon, is used as the toolchain.
 
 Enjoy!

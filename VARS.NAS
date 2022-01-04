@@ -1,6 +1,6 @@
-; Переменные используемые в игре (распределение памяти)
+; Variables used in the game (memory allocation)
 
-; Нулевая страница ($0000-$00FF). Маленькие однобайтовые переменные, указатели.
+; Zero page ($0000-$00FF). Small single-byte variables, pointers.
 TOPSCORE            EQU $01 
 SOFT_RESET_FLAG     EQU $08 
 CLEAR_TOPSCORE1     EQU $09 
@@ -181,8 +181,8 @@ APU_CHAN_DIS        EQU $E1
 APU_SOUND_MOD       EQU $E1
 APU_SDELAY          EQU $E4 
 
-; Остальная память ($0100-$07FF). В основном большие таблицы и буферы.
-_passworf_buffer    EQU $0180           ; Досталось в наследство от Санчеза (с IDB файлом), как видно, тут есть его типичная опечатка.
+; The rest of the memory ($0100-$07FF). Mostly large tables and buffers.
+_password_buffer    EQU $0180
 BOMB_ACTIVE         EQU $03A0 
 BOMB_X              EQU $03AA 
 BOMB_Y              EQU $03B4 

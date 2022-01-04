@@ -1,4 +1,4 @@
-; ќцифровка взрыва бомбы.
+; Digitization of the bomb blast.
 
 BOOM_SAMPLE
     BYTE    $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FC, $00, $00, $1F, $F0, $00, $1F 

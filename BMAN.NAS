@@ -7,15 +7,15 @@
 
 
 RESET
-        SEI                             ; Сбросить PPU. Запретить NMI, выключить бэкраунд и спрайты.
+        SEI                             ; Reset PPU. Disable NMI, turn off background and sprites.
         LDA #0
         STA PPU_CTRL_REG2
         STA PPU_CTRL_REG1
-        CLD                             ; У CPU NES 6502 нет BCD-режима, сбросить флаг на всякий случай.
-        LDX #$FF                        ; Установить указатель стека в начальное положение
+        CLD                             ; The NES 6502 CPU has no BCD mode, reset the flag just in case.
+        LDX #$FF                        ; Set the stack pointer to the initial position
         TXS
 
-WAIT_VBLANK1                            ; Подождать 2 VBlank-a, для стабилизации PPU.
+WAIT_VBLANK1                            ; Wait for 2 VBlank's, to stabilize the PPU.
         LDA PPU_STATUS
         BPL WAIT_VBLANK1
 
@@ -33,13 +33,13 @@ NMI
         TYA
         PHA
         LDX #0
-        STX FRAMEDONE   ; Отменить ожидание начала кадра
+        STX FRAMEDONE   ; Cancel frame start wait
         STX PPU_SPR_ADDR
         LDA STAGE_STARTED
         BEQ SEND_SPRITES
-        LDA #25     ; Нарисовать маленькую единичку справа-вверху на экране
-        STA SPR_TAB     ; Используется видимо для отладки (забыли убрать)
-        LDA #$EC ; 'ь'
+        LDA #25     ; Draw a small `1` on the top-right side of the screen
+        STA SPR_TAB     ; Apparently used for debugging (forgot to remove)
+        LDA #$EC
         STA SPR_TAB+1
         LDA #0
         STA SPR_TAB+2
@@ -49,12 +49,12 @@ NMI
 SEND_SPRITES
         LDA #7
         STA PPU_SPR_DMA
-        LDX #9      ; Нарисовать тайлы из кругового буфера
+        LDX #9      ; Draw tiles from the circular buffer
         STX TILE_CNT
         BNE DRAW_NEXT_TILE
 
 DRAW_TILES
-        LDA TILE_TAB+2,Y    ; Отрисовывать новые тайлы до конца буфера, но не более TILE_CNT штук
+        LDA TILE_TAB+2,Y    ; Draw new tiles until the end of the buffer, but no more than TILE_CNT tiles.
         ORA TILE_TAB,Y
         PHA
         STA PPU_ADDRESS
@@ -101,7 +101,7 @@ DRAW_TILES
 DRAW_NEXT_TILE:             
         LDY TILE_CUR
         CPY TILE_PTR
-        BNE DRAW_TILES  ; Отрисовывать новые тайлы до конца буфера, но не более TILE_CNT штук
+        BNE DRAW_TILES  ; Draw new tiles until the end of the buffer, but no more than TILE_CNT tiles.
 
 DRAW_MENU_ARROW:            
         LDA INMENU
@@ -141,19 +141,19 @@ DRAW_ARROW_SKIP:
         LDX #0
 
 DRAW_SCORE_BLANK:           
-        LDA SCORE,X     ; Пропустить начальные нули
+        LDA SCORE,X     ; Skip leading zeros
         BNE DRAW_SCORE_NUM
-        LDA #$3A ; ':'      ; Пустой символ вместо нуля
+        LDA #$3A ; ':'      ; Blank character instead of zero
         STA PPU_DATA
         INX
         CPX #7
-        BNE DRAW_SCORE_BLANK ; Пропустить начальные нули
+        BNE DRAW_SCORE_BLANK ; Skip leading zeros
         BEQ DRAW_TIMER
 
 DRAW_SCORE_NUM:             
         LDA SCORE,X
         CLC
-        ADC #$30 ; '0'      ; Цифра 0...9
+        ADC #$30 ; '0'      ; The number is 0...9
         STA PPU_DATA
         INX
         CPX #7
@@ -187,8 +187,8 @@ UPDATE_FPS:
 TICK_FPS:               
         STA FPS
         JSR PAD_READ
-        JSR APU_PLAY_MELODY ; Проиграть мелодию
-        JSR APU_PLAY_SOUND  ; Проиграть звук
+        JSR APU_PLAY_MELODY ; Play a tune
+        JSR APU_PLAY_SOUND  ; Play the sound
         LDA BOOM_SOUND
         BEQ SET_SCROLL_REG
         LDA DEMOPLAY
@@ -329,7 +329,7 @@ PPU_RESET
         STA TILE_CUR
         STA TILE_PTR
         STA V_SCROLL
-        JSR SPRD        ; Спрятать спрайты
+        JSR SPRD        ; Hide Sprites
         JSR PPUD
         JSR WAITVBL
         JSR PAL_RESET
@@ -351,8 +351,8 @@ CLEAR_NT
         BNE CLEAR_NT
         DEY
         BNE CLEAR_NT
-        LDA #$23 ; '#'
-        LDX #$C0 ; 'L'
+        LDA #$23
+        LDX #$C0
         JSR VRAMADDR
         LDX #$40 ; '@'
         LDA #0
@@ -378,25 +378,24 @@ PPUE
 
 ; =============== S U B R O U T I N E =======================================
 
-; Как происходит отрисовка спрайтов.
-; Всего в игре может быть до 16 спрайтовых образов (10 монстров, бомбермен и бонусные очки)
-; Спрайтовый образ состоит из 4 спрайтов и имеет размер 16x16.
-; Таблица спрайтов условно поделена на две части: для четного и нечетного кадров.
-; Сделано это видимо для того, чтобы уменьшить мерцание спрайтов.
-; Отрисовка спрайтового образа происходит по половинкам (вначале левая 8x16, потом правая),
-; так как они симметричны.
-; Специальная переменная SPR_TAB_TOGGLE каждый кадр принимает значения 0 -> 5 -> 0 ...
-; и тем самым выбирает какую половинку SPR_TAB использовать для отрисовки.
-; Вообще смещение в SPR_TAB для текущего спрайтового образа вычисляется так:
-; TEMP = SPR_TAB_INDEX++ + SPR_TAB_TOGGLE   <-- Индекс начинается с 1.
-; TEMP = TEMP >= 12 ? TEMP - 10 : TEMP      <-- Ограничить индекс до 12
-; Y = 16 * TEMP                             <-- *16 потому что образ из 4 спрайтов
-; Что немного странно, но что взять, как сделали так и есть.
-; Для примера - на экране находится бомбер и 10 монстров. Значение TEMP будет такое-
-; Для четных кадров: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-; Для нечетных кадров: 6, 7, 8, 9, 10, 11, 2, 3, 4, 5, 6
-; (Для нечетных кадров спрайты бомбермена будут затерты спратами монстра и в результате
-; картинка бомбера будет мигать когда на экране много спрайтов).
+; How sprites are rendered.
+; There can be up to 16 sprite images in total (10 monsters, bomberman and bonus points)
+; The sprite image consists of 4 sprites and is 16x16 in size.
+; The sprite table is conventionally divided into two parts: for even and odd frames.
+; Apparently this is done to reduce the flicker of sprites.
+; The sprite image is rendered in halves (first the left 8x16, then the right) because they are symmetrical.
+; The special variable SPR_TAB_TOGGLE takes values 0 -> 5 -> 0 every frame ...
+; and thereby selects which half of the SPR_TAB to use for rendering.
+; In general, the offset in SPR_TAB for the current sprite image is calculated as follows:
+; TEMP = SPR_TAB_INDEX++ + SPR_TAB_TOGGLE   <-- The index begins with 1.
+; TEMP = TEMP >= 12 ? TEMP - 10 : TEMP      <-- Limit the index to 12
+; Y = 16 * TEMP                             <-- *16 because the image is made up of 4 sprites
+; Which is a little strange, but what to take, as they did so.
+; For example, there is a bomber and 10 monsters on the screen. The TEMP value will be as follows-
+; For even frames: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+; For odd frames: 6, 7, 8, 9, 10, 11, 2, 3, 4, 5, 6
+; (For odd frames bomber sprites will be overwritten by monster sprites and as a result 
+; the bomber picture will blink when there are many sprites on the screen).
 
 
 SENDSPR
@@ -437,7 +436,7 @@ SPRE:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Спрятать спрайты
+; Hide Sprites
 
 SPRD
         LDY #$1C
@@ -496,7 +495,7 @@ PPU_RESTORE
 VBLE
         JSR WAITVBL
         LDA LAST_2000
-        ORA #$80 ; 'А'
+        ORA #$80
         BNE WRITE2000
 
 
@@ -505,7 +504,7 @@ VBLE
 
 VBLD
         LDA LAST_2000
-        AND #$7F ; ''
+        AND #$7F
 
 WRITE2000:              
         STA LAST_2000
@@ -548,11 +547,11 @@ STARTPAL:   .BYTE $19, $F,$10,$30,$19,$16,$26,$36,$19, $F,$18,$28,$19, $F,$17,  
 
 ; =============== S U B R O U T I N E =======================================
 
-; Ждать отпускания кнопки
+; Wait for the button to release
 
 WAITUNPRESS
         LDA JOYPAD1
-        BNE WAITUNPRESS ; Ждать отпускания кнопки
+        BNE WAITUNPRESS ; Wait for the button to release
         RTS
 
 
@@ -577,7 +576,7 @@ CLEAR_WRAM:
         BNE CLEAR_WRAM
         LDX #0
         LDY SOFT_RESET_FLAG
-        CPY #$93 ; 'У'
+        CPY #$93
         BNE CLEAR_ZP
         LDY CLEAR_TOPSCORE1
         BNE CLEAR_ZP
@@ -589,14 +588,14 @@ CLEAR_ZP
         STA 0,X
         INX
         BNE CLEAR_ZP
-        LDA #$93 ; 'У'
+        LDA #$93
         STA SOFT_RESET_FLAG
 
 RESET_GAME
         JSR PPU_RESET
         LDA #0
         STA SPR_TAB_TOGGLE
-        JSR APU_RESET   ; Сбросить состояние APU
+        JSR APU_RESET   ; Reset APU state
         LDA #1
         STA APU_MUSIC
 
@@ -628,24 +627,24 @@ DEMO_WAIT_LOOP:
         JSR NEXTFRAME
         LDA JOYPAD1
         AND #$10
-        BNE START_PRESSED   ; Если нажат START
+        BNE START_PRESSED   ; If START is pressed
         LDA JOYPAD1
         AND #$20 ; ' '
-        BEQ UPDATE_RAND ; Обновить генератор случайных чисел
+        BEQ UPDATE_RAND ; Update the random number generator
         LDA CURSOR
         EOR #1
         STA CURSOR
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
         JMP ADVANCE_FRAME
 ; ---------------------------------------------------------------------------
 
 UPDATE_RAND:                
-        JSR RAND        ; Обновить генератор случайных чисел
+        JSR RAND        ; Update the random number generator
         DEC DEMO_WAIT_LO
         BNE DEMO_WAIT_LOOP
         DEC DEMO_WAIT_HI
         BNE DEMO_WAIT_LOOP
-        INC DEMOPLAY    ; Если счетчик истек, то запустить демонстрацию
+        INC DEMOPLAY    ; If the counter has expired, start the demonstration
 
 START_PRESSED:              
         LDA DEMOPLAY
@@ -657,7 +656,7 @@ START_PRESSED:
 loc_C3A3:               
         LDA #0
         STA INMENU
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
         LDA #2
         STA LIFELEFT
         LDA DEMOPLAY
@@ -703,9 +702,9 @@ loc_C3C7:
         STA SEED+2
         STA SEED+3
         STA FRAME_CNT
-        LDA #$F4 ; 'Ї'
+        LDA #$F4
         STA DEMOKEY_DATA
-        LDA #$ED ; 'э'
+        LDA #$ED
         STA DEMOKEY_DATA+1
         LDA DEMO_KEYDATA
         STA DEMOKEY_TIMEOUT
@@ -736,36 +735,36 @@ START_STAGE:
         JSR STAGE_SCREEN
         LDA #2
         STA APU_MUSIC
-        JSR WAITTUNE    ; Подождать окончания текущей мелодии
+        JSR WAITTUNE    ; Wait for the end of the current tune
         LDA #3
         STA APU_MUSIC
         JSR VBLD
-        JSR BUILD_MAP   ; Сгенерировать карту уровня с кирпичами
-        JSR SPAWN       ; Создать монстров и бомбермена
+        JSR BUILD_MAP   ; Generate a level map with bricks
+        JSR SPAWN       ; Create monsters and bomberman
         JSR sub_E4AF
-        JSR PICTURE_ON  ; Включить экран и спрайты
+        JSR PICTURE_ON  ; Turn on the screen and sprites
         LDA #200
         STA TIMELEFT
 
 STAGE_LOOP:             
-        JSR PAUSED      ; Проверить нажата ли пауза (и если нажата, то ждать отпускания)
-        JSR SPRD        ; Спрятать спрайты
-        JSR sub_CC36    ; Обработка нажатий на кнопки
-        JSR BOMB_TICK   ; Обработка таймера бомб и инициация взрыва
-        JSR DRAW_BOMBERMAN  ; Нарисовать бомбермена (обновить спрайт)
-        JSR THINK       ; Монстры.
-        JSR BOMB_ANIMATE    ; Нарисовать анимацию бомб
-        JSR STAGE_TIMER ; Уменшить время на 1 секунду (обычный уровень)
+        JSR PAUSED      ; Check if the pause is pressed (and if it is, wait for it to release)
+        JSR SPRD        ; Hide Sprites
+        JSR sub_CC36    ; Button handling
+        JSR BOMB_TICK   ; Bomb timer processing and detonation initiation
+        JSR DRAW_BOMBERMAN  ; Draw the bomberman (update the sprite)
+        JSR THINK       ; Monsters.
+        JSR BOMB_ANIMATE    ; Draw a bomb animation
+        JSR STAGE_TIMER ; Reduce time by 1 second (normal level)
         JSR sub_E399
         LDA byte_5D
         BNE loc_C481
         LDA byte_5E
         BNE loc_C4BF
         LDA FRAME_CNT
-        AND #3      ; Взрывы обновляются только в 1 кадре из 4-х
+        AND #3      ; Explosions are only updated in 1 frame out of 4
         BNE STAGE_LOOP
-        JSR sub_C79D    ; Отрисовка взрывов (?)
-        JSR sub_C66C    ; Трассировка взрыва для нахождения жертвы
+        JSR sub_C79D    ; Drawing explosions (?)
+        JSR sub_C66C    ; Explosion tracing to find the victim
         JMP STAGE_LOOP
 ; ---------------------------------------------------------------------------
 
@@ -780,7 +779,7 @@ loc_C481:
         STA INVUL_UNK1
         LDA #8
         STA APU_MUSIC
-        JSR WAITTUNE    ; Подождать окончания текущей мелодии
+        JSR WAITTUNE    ; Wait for the end of the current tune
         DEC LIFELEFT
         BMI GAME_OVER
         JMP START_STAGE
@@ -831,25 +830,25 @@ loc_C4D2:
 NEXT_STAGE:             
         LDA #10
         STA APU_MUSIC
-        JSR WAITTUNE    ; Подождать окончания текущей мелодии
+        JSR WAITTUNE    ; Wait for the end of the current tune
         INC LIFELEFT
         INC STAGE
         LDY #0
         LDA STAGE
         CMP #51
-        BNE SELECT_BONUS_MONSTER ; Выбрать тип монстра для бонусного уровня
+        BNE SELECT_BONUS_MONSTER ; Choose the type of monster for the bonus level
         JMP END_GAME
 ; ---------------------------------------------------------------------------
 
 SELECT_BONUS_MONSTER:           
-        INY         ; Выбрать тип монстра для бонусного уровня
+        INY         ; Choose the type of monster for the bonus level
         SEC
         SBC #5
-        BCS SELECT_BONUS_MONSTER ; Выбрать тип монстра для бонусного уровня
+        BCS SELECT_BONUS_MONSTER ; Choose the type of monster for the bonus level
         DEY
         CPY #8
         BCC SELECT_STAGE_TYPE
-        LDY #8      ; Тип монстра ограничен 1...8
+        LDY #8      ; Monster type is limited to 1...8
 
 SELECT_STAGE_TYPE:          
         STY BONUS_ENEMY_TYPE
@@ -865,44 +864,44 @@ START_BONUS_STAGE:
         JSR BONUS_STAGE_SCREEN
         LDA #2
         STA APU_MUSIC
-        JSR WAITTUNE    ; Подождать окончания текущей мелодии
+        JSR WAITTUNE    ; Wait for the end of the current tune
         JSR VBLD
-        JSR BUILD_CONCRET_WALLS ; Построить бетонные стены
-        JSR SPAWN       ; Создать монстров и бомбермена
-        JSR PICTURE_ON  ; Включить экран и спрайты
+        JSR BUILD_CONCRET_WALLS ; Build concrete walls
+        JSR SPAWN       ; Create monsters and bomberman
+        JSR PICTURE_ON  ; Turn on the screen and sprites
         JSR STAGE_CLEANUP
         LDA #6
         STA APU_MUSIC
         LDA #1
         STA INVUL_UNK1
         STA INVUL_UNK2
-        LDA #30     ; Установить 30 секунд
+        LDA #30     ; Set 30 seconds
         STA TIMELEFT
 
 BONUS_STAGE_LOOP:           
-        JSR PAUSED      ; Проверить нажата ли пауза (и если нажата, то ждать отпускания)
+        JSR PAUSED      ; Check if the pause is pressed (and if it is, wait for it to release)
         LDA TIMELEFT
-        BEQ BONUS_STAGE_END ; Если время закончилось то выйти из бонусного уровня
-        JSR SPRD        ; Спрятать спрайты
-        JSR RESPAWN_BONUS_ENEMY ; Если количество монстров в бонусном уровне меньше 10, то добавить ещё
-        JSR sub_CC36    ; Обработка нажатий на кнопки
-        JSR BOMB_TICK   ; Обработка таймера бомб и инициация взрыва
-        JSR DRAW_BOMBERMAN  ; Нарисовать бомбермена (обновить спрайт)
-        JSR THINK       ; Монстры.
-        JSR BOMB_ANIMATE    ; Нарисовать анимацию бомб
-        JSR BONUS_STAGE_TIMER ; Уменшить время на 1 секунду (бонусный уровень)
+        BEQ BONUS_STAGE_END ; If time runs out then exit the bonus level
+        JSR SPRD        ; Hide Sprites
+        JSR RESPAWN_BONUS_ENEMY ; If the number of monsters in the bonus level is less than 10, then add more
+        JSR sub_CC36    ; Button handling
+        JSR BOMB_TICK   ; Bomb timer processing and detonation initiation
+        JSR DRAW_BOMBERMAN  ; Draw the bomberman (update the sprite)
+        JSR THINK       ; Monsters.
+        JSR BOMB_ANIMATE    ; Draw a bomb animation
+        JSR BONUS_STAGE_TIMER ; Reduce time by 1 second (bonus level)
         LDA FRAME_CNT
-        AND #1      ; Взрывы обновляются не каждый кадр, а через раз
+        AND #1      ; Explosions are not updated every frame, but every other frame
         BNE BONUS_STAGE_LOOP
-        JSR sub_C79D    ; Отрисовка взрывов (?)
-        JSR sub_C66C    ; Трассировка взрыва для нахождения жертвы
+        JSR sub_C79D    ; Drawing explosions (?)
+        JSR sub_C66C    ; Explosion tracing to find the victim
         JMP BONUS_STAGE_LOOP
 ; ---------------------------------------------------------------------------
 
 BONUS_STAGE_END:            
         LDA #10
         STA APU_MUSIC
-        JSR WAITTUNE    ; Подождать окончания текущей мелодии
+        JSR WAITTUNE    ; Wait for the end of the current tune
         LDA #0
         STA INVUL_UNK2
         STA INVUL_UNK1
@@ -912,7 +911,7 @@ BONUS_STAGE_END:
 END_GAME:               
         JSR PPU_RESET
         JSR sub_DBF9
-        JSR BUILD_CONCRET_WALLS ; Построить бетонные стены
+        JSR BUILD_CONCRET_WALLS ; Build concrete walls
         LDA #8
         STA BOMBMAN_U
         STA BOMBMAN_V
@@ -930,8 +929,8 @@ loc_C58F:
         JSR NEXTFRAME
         LDA #1
         STA SPR_TAB_INDEX
-        JSR SPRD        ; Спрятать спрайты
-        JSR DRAW_BOMBERMAN  ; Нарисовать бомбермена (обновить спрайт)
+        JSR SPRD        ; Hide Sprites
+        JSR DRAW_BOMBERMAN  ; Draw the bomberman (update the sprite)
         LDA FRAME_CNT
         ROR
         BCS loc_C5A4
@@ -946,7 +945,7 @@ WAIT_END_MELODY:
         JSR NEXTFRAME
         LDA #1
         STA SPR_TAB_INDEX
-        JSR SPRD        ; Спрятать спрайты
+        JSR SPRD        ; Hide Sprites
         JSR sub_CEA7
         LDA FRAME_CNT
         ROR
@@ -966,7 +965,7 @@ WAIT_BUTTON:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Создать монстров и бомбермена
+; Create monsters and bomberman
 
 SPAWN:                  
         LDA #1
@@ -986,7 +985,7 @@ SPAWN:
         JSR WAITVBL
         JSR PAL_RESET
         LDX STAGE
-        LDA EXIT_ENEMY_TAB-1,X ; В этой таблице содержится тип монстра, которые вылазиют из двери после взрыва
+        LDA EXIT_ENEMY_TAB-1,X ; This table contains the type of monster that comes out of the door after an explosion
         STA EXIT_ENEMY_TYPE
         LDA #1
         STA STAGE_STARTED
@@ -995,10 +994,10 @@ SPAWN:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Включить экран и спрайты
+; Turn on the screen and sprites
 
 PICTURE_ON:             
-        JSR SPRD        ; Спрятать спрайты
+        JSR SPRD        ; Hide Sprites
         JSR VBLE
         JSR PPUE
         JMP SPRE
@@ -1006,11 +1005,11 @@ PICTURE_ON:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Подождать окончания текущей мелодии
+; Wait for the end of the current tune
 
 WAITTUNE:               
         LDA APU_MUSIC
-        BNE WAITTUNE    ; Подождать окончания текущей мелодии
+        BNE WAITTUNE    ; Wait for the end of the current tune
         RTS
 
 ; ---------------------------------------------------------------------------
@@ -1021,7 +1020,7 @@ ABORT_DEMOPLAY:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Проверить нажата ли пауза (и если нажата, то ждать отпускания)
+; Check if the pause is pressed (and if it is, wait for it to release)
 
 PAUSED:                 
         JSR NEXTFRAME
@@ -1035,18 +1034,18 @@ PAUSED:
         LDA #1
         STA APU_DISABLE
         LDA #6
-        STA APU_SOUND   ; Проиграть звук
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        STA APU_SOUND   ; Play the sound
+        JSR WAITUNPRESS ; Wait for the button to release
 
 WAIT_START:             
         LDA JOYPAD1
         AND #$10
         BEQ WAIT_START
         LDA #6
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         LDA #0
         STA APU_DISABLE
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
         JMP NEXTFRAME
 ; ---------------------------------------------------------------------------
 
@@ -1056,7 +1055,7 @@ NOT_PAUSED:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Уменшить время на 1 секунду (обычный уровень)
+; Reduce time by 1 second (normal level)
 
 STAGE_TIMER:                
         LDA FRAME_CNT
@@ -1067,10 +1066,10 @@ STAGE_TIMER:
         BEQ STAGE_TIMER_END
         DEC TIMELEFT
         BNE STAGE_TIMER_END
-        JSR KILL_ENEMY  ; Удалить всех монстров с карты
-        LDA #8      ; Добавить кучу самых крутых монстров
+        JSR KILL_ENEMY  ; Remove all monsters from the map
+        LDA #8      ; Add a bunch of the coolest monsters
         STA BONUS_ENEMY_TYPE
-        JMP RESPAWN_BONUS_ENEMY ; Если количество монстров в бонусном уровне меньше 10, то добавить ещё
+        JMP RESPAWN_BONUS_ENEMY ; If the number of monsters in the bonus level is less than 10, then add more
 ; ---------------------------------------------------------------------------
 
 STAGE_TIMER_END:            
@@ -1079,7 +1078,7 @@ STAGE_TIMER_END:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Уменшить время на 1 секунду (бонусный уровень)
+; Reduce time by 1 second (bonus level)
 
 BONUS_STAGE_TIMER:          
         LDA FRAME_CNT
@@ -1093,7 +1092,7 @@ BONUS_STAGE_TIMER:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Трассировка взрыва для нахождения жертвы
+; Explosion tracing to find the victim
 
 sub_C66C:               
         LDX #$4F ; 'O'
@@ -1102,7 +1101,7 @@ loc_C66E:
         LDA FIRE_ACTIVE,X
         BEQ loc_C6CD
         BPL loc_C688
-        AND #$7F ; ''
+        AND #$7F
         TAY
         LDA FIRE_X,X
         STA byte_1F
@@ -1169,7 +1168,7 @@ loc_C6D6:
 loc_C6DA:               
         AND #$FF
         BEQ loc_C753
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
         LDA byte_5C
         BNE loc_C705
         LDA BONUS_FIRESUIT
@@ -1183,7 +1182,7 @@ loc_C6DA:
         CMP byte_20
         BNE loc_C705
         LDA #5
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         LDA #1
         STA byte_5C
         LDA #12
@@ -1232,7 +1231,7 @@ loc_C74E:
         BMI loc_C756
 
 loc_C753:               
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
 
 loc_C756:               
         DEX
@@ -1256,7 +1255,7 @@ byte_C778:  .BYTE $12, $F,$10,  0,  0,$17,$18,$19
 
 ; =============== S U B R O U T I N E =======================================
 
-; Отрисовка взрывов (?)
+; Drawing explosions (?)
 
 sub_C79D:               
         LDX #79
@@ -1273,14 +1272,14 @@ loc_C7A7:
         PHA
         LDY FIRE_Y,X
         STY byte_20
-        JSR FIX_STAGE_PTR   ; Подправить указатель на текущую клетку карты
+        JSR FIX_STAGE_PTR   ; Fix the pointer to the current map cell
         LDY FIRE_X,X
         STY byte_1F
         PLA
         BPL loc_C7CB
         INC FIRE_ACTIVE,X
         LDA FIRE_ACTIVE,X
-        CMP #$87 ; 'З'
+        CMP #$87
         BNE loc_C7A4
         LDA #0
         STA FIRE_ACTIVE,X
@@ -1294,7 +1293,7 @@ loc_C7CB:
         CPY #2
         BNE loc_C7DE
         INC byte_A4
-        LDA #$80 ; 'А'
+        LDA #$80
         STA FIRE_ACTIVE,X
         JMP loc_C8A6
 ; ---------------------------------------------------------------------------
@@ -1316,7 +1315,7 @@ loc_C7EE:
         LDA #8
         STA (STAGE_MAP),Y
         LDA #$28 ; '('
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
         JMP loc_C830
 ; ---------------------------------------------------------------------------
 
@@ -1329,7 +1328,7 @@ loc_C800:
         LDA #$28 ; '('
         CLC
         ADC EXIT_ENEMY_TYPE
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
         JMP loc_C830
 ; ---------------------------------------------------------------------------
 
@@ -1341,7 +1340,7 @@ loc_C815:
         LDY byte_1F
         LDA #0
         STA (STAGE_MAP),Y
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
         DEC byte_A7
 
 loc_C828:               
@@ -1362,8 +1361,8 @@ loc_C838:
         CLC
         ADC #8
         STA byte_526,X
-        AND #$7F ; ''
-        CMP #$48 ; 'H'
+        AND #$7F
+        CMP #$48
         BCS loc_C7EE
         LDA byte_4D6,X
         STA byte_36
@@ -1400,7 +1399,7 @@ loc_C838:
         LDA #0
         STA FIRE_ACTIVE,Y
         LDA byte_526,X
-        ORA #$80 ; 'А'
+        ORA #$80
         STA byte_526,X
         JMP loc_C8A1
 ; ---------------------------------------------------------------------------
@@ -1461,7 +1460,7 @@ loc_C8E9:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Если количество монстров в бонусном уровне меньше 10, то добавить ещё
+; If the number of monsters in the bonus level is less than 10, then add more
 
 RESPAWN_BONUS_ENEMY:            
         LDY #9
@@ -1506,7 +1505,7 @@ NEXT_BMONSTR:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Подорвать все бомбы
+; Blow up all the bombs
 
 DETONATE:               
         LDX #9
@@ -1524,7 +1523,7 @@ DETONATE_LOOP:
         STY byte_1F
         LDA #0
         JSR sub_C9B6
-        JSR PLAY_BOOM_SOUND ; Воспроизвести звук взрыва бомбы
+        JSR PLAY_BOOM_SOUND ; Play the sound of a bomb exploding
         LDA #0
         STA (STAGE_MAP),Y
         LDA #0
@@ -1540,7 +1539,7 @@ DETONATE_NEXT:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Обработка таймера бомб и инициация взрыва
+; Bomb timer processing and detonation initiation
 
 BOMB_TICK:              
         LDX #9
@@ -1575,7 +1574,7 @@ loc_C999:
         INC byte_A5
 
 loc_C9A6:               
-        JSR PLAY_BOOM_SOUND ; Воспроизвести звук взрыва бомбы
+        JSR PLAY_BOOM_SOUND ; Play the sound of a bomb exploding
         LDA #0
         STA (STAGE_MAP),Y
         LDA #0
@@ -1649,20 +1648,20 @@ byte_CA16:  .BYTE   0,  1,  0,$FF,  0
 
 ; =============== S U B R O U T I N E =======================================
 
-; Нарисовать анимацию бомб
+; Draw a bomb animation
 
 BOMB_ANIMATE:               
         LDX #9
 
 BOMB_ANIM_LOOP:             
         LDA BOMB_ACTIVE,X
-        BEQ BOMB_ANIM_NEXT  ; Если бомба не установлена, пропустить
+        BEQ BOMB_ANIM_NEXT  ; If the bomb is not set, skip
         LDA BOMB_X,X
         STA byte_1F
         LDA BOMB_Y,X
         STA byte_20
         LDA BOMB_TIME_ELAPSED,X
-        AND #$F     ; Задержка на анимацию
+        AND #$F     ; Animation delay
         BNE BOMB_ANIM_NEXT
         LDA BOMB_TIME_ELAPSED,X
         LSR
@@ -1671,8 +1670,8 @@ BOMB_ANIM_LOOP:
         LSR
         AND #3
         TAY
-        LDA BOMB_ANIM,Y ; Выбрать кадр анимации из таблицы
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        LDA BOMB_ANIM,Y ; Select an animation frame from the table
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
 
 BOMB_ANIM_NEXT:             
         DEX
@@ -1684,10 +1683,10 @@ BOMB_ANIM:  .BYTE   9, $A,  9,  8
 
 ; =============== S U B R O U T I N E =======================================
 
-; Сгенерировать карту уровня с кирпичами
+; Generate a level map with bricks
 
 BUILD_MAP:              
-        JSR BUILD_CONCRET_WALLS ; Построить бетонные стены
+        JSR BUILD_CONCRET_WALLS ; Build concrete walls
         JSR RAND_COORDS
         LDA #4
         STA (STAGE_MAP),Y
@@ -1712,7 +1711,7 @@ NEXT_BRICK:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Построить бетонные стены
+; Build concrete walls
 
 BUILD_CONCRET_WALLS:            
         LDA #0
@@ -1856,7 +1855,7 @@ loc_CB38:
         LDA byte_20
         CMP #13
         BNE loc_CB17
-        JSR TIME_AND_LIFE   ; Нарисовать строки "TIME" и "LEFT XX"
+        JSR TIME_AND_LIFE   ; Draw text "TIME" and "LEFT XX"
         JMP PPU_RESTORE
 
 
@@ -1944,7 +1943,7 @@ CLEAN_EXPLO:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Удалить всех монстров с карты
+; Remove all monsters from the map
 
 KILL_ENEMY:             
         LDA #0
@@ -1977,7 +1976,7 @@ locret_CBEA:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Подправить указатель на текущую клетку карты
+; Fix the pointer to the current map cell
 
 FIX_STAGE_PTR:              
         LDA MULT_TABY,Y
@@ -1989,7 +1988,7 @@ FIX_STAGE_PTR:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Воспроизвести звук взрыва бомбы
+; Play the sound of a bomb exploding
 
 PLAY_BOOM_SOUND:            
         LDA #1
@@ -2010,7 +2009,7 @@ locret_CC03:
         RTS
 
 ; ---------------------------------------------------------------------------
-EXIT_ENEMY_TAB: .BYTE   2,  1,  5,  3,  1,  1,  2,  5,  6,  4 ; В этой таблице содержится тип монстра, которые вылазиют из двери после взрыва
+EXIT_ENEMY_TAB: .BYTE   2,  1,  5,  3,  1,  1,  2,  5,  6,  4 ; This table contains the type of monster that comes out of the door after an explosion
         .BYTE   1,  1,  5,  6,  2,  4,  1,  6,  1,  5 
         .BYTE   6,  5,  1,  5,  6,  8,  2,  1,  5,  7
         .BYTE   4,  1,  5,  8,  6,  7,  5,  2,  4,  8
@@ -2018,7 +2017,7 @@ EXIT_ENEMY_TAB: .BYTE   2,  1,  5,  3,  1,  1,  2,  5,  6,  4 ; В этой таблице с
 
 ; =============== S U B R O U T I N E =======================================
 
-; Обработка нажатий на кнопки
+; Button handling
 
 sub_CC36:               
         LDA INVUL_UNK2
@@ -2053,10 +2052,10 @@ locret_CC62:
 loc_CC63:               
         LDA BOMBMAN_U
         CMP #8
-        BNE loc_CCA4    ; Проверить скорость бомбера
+        BNE loc_CCA4    ; Check the speed of the bomberman
         LDA BOMBMAN_V
         CMP #8
-        BNE loc_CCA4    ; Проверить скорость бомбера
+        BNE loc_CCA4    ; Check the speed of the bomberman
         LDY BOMBMAN_Y
         STY byte_20
         LDA MULT_TABY,Y
@@ -2069,10 +2068,10 @@ loc_CC63:
         CMP #8
         BEQ loc_CC95
         CMP #6
-        BNE loc_CCA4    ; Проверить скорость бомбера
+        BNE loc_CCA4    ; Check the speed of the bomberman
         LDA #0
         STA (STAGE_MAP),Y
-        JSR DRAW_TILE   ; Добавить в TILE_TAB новый тайл
+        JSR DRAW_TILE   ; Add a new tile to TILE_TAB
         JMP loc_CEE9
 ; ---------------------------------------------------------------------------
 
@@ -2081,7 +2080,7 @@ loc_CC95:
         LDA #0
         STA byte_A6
         LDA byte_9C
-        BNE loc_CCA4    ; Проверить скорость бомбера
+        BNE loc_CCA4    ; Check the speed of the bomberman
         LDA #1
         STA byte_5E
 
@@ -2090,55 +2089,55 @@ locret_CCA3:
 ; ---------------------------------------------------------------------------
 
 loc_CCA4:               
-        LDA BONUS_SPEED ; Проверить скорость бомбера
+        LDA BONUS_SPEED ; Check the speed of the bomberman
         BNE FAST_MOVE
         LDA FRAME_CNT
-        AND #3      ; Без бонусной скорости бомбер топает только 1 раз в 4 кадра
+        AND #3      ; Without bonus speed, the bomberman stomps only once every 4 frames
         BEQ locret_CCA3
 
 FAST_MOVE:              
-        JSR GET_INPUT   ; Возвратить в A значение кнопок P1 | P2
+        JSR GET_INPUT   ; Return to A the value of buttons P1 | P2
         BNE CASE_RIGHT
         STA byte_A6
         STA LAST_INPUT
 
 CASE_RIGHT:             
         TAX
-        AND #1      ; Вправо
+        AND #1      ; Right
         BEQ CASE_LEFT
         JSR sub_CDD4
 
 CASE_LEFT:              
         TXA
-        AND #2      ; Влево
+        AND #2      ; Left
         BEQ CASE_UP
         JSR sub_CDA3
 
 CASE_UP:                
         TXA
-        AND #8      ; Вверх
+        AND #8      ; Up
         BEQ CASE_DOWN
         JSR sub_CD70
 
 CASE_DOWN:              
         TXA
-        AND #4      ; Вниз
+        AND #4      ; Down
         BEQ CASE_ACTION
         JSR sub_CD39
 
 CASE_ACTION:                
         TXA
-        AND #$80 ; 'А'      ; A
+        AND #$80            ; A
         BNE CASE_A
-        LDA BONUS_REMOTE    ; Только если у бомбера есть радио детонатор
+        LDA BONUS_REMOTE    ; Only if the bomberman has a radio detonator
         BEQ CASE_NOTHING
         LDA LAST_INPUT
         BNE CASE_NOTHING
         TXA
-        AND #$40 ; '@'      ; B
+        AND #$40            ; B
         BEQ CASE_NOTHING
         STA LAST_INPUT
-        JSR DETONATE    ; Подорвать все бомбы
+        JSR DETONATE    ; Blow up all the bombs
 
 CASE_NOTHING:               
         RTS
@@ -2152,9 +2151,9 @@ CASE_A:
         STA STAGE_MAP+1
         LDY BOMBMAN_X
         LDA (STAGE_MAP),Y
-        BNE CASE_NOTHING    ; На этом месте уже что то есть, не ставить бомбу
-        JSR ADJUST_BOMBMAN_HPOS ; Сместить немного бомбермена влево или вправо после установки бомбы
-        JSR ADJUST_BOMBMAN_VPOS ; Сместить немного бомбермена вверх или вниз после установки бомбы
+        BNE CASE_NOTHING    ; There's already something in this place, don't put a bomb
+        JSR ADJUST_BOMBMAN_HPOS ; Move the bomber a little to the left or right after placing the bomb
+        JSR ADJUST_BOMBMAN_VPOS ; Move the bomber up or down a bit after placing the bomb
         LDX BONUS_BOMBS
 
 CHECK_AMMO_LEFT:            
@@ -2181,7 +2180,7 @@ PLACE_BOMB:
         LDA #1
         STA BOMB_ACTIVE,X
         LDA #3
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         RTS
 
 
@@ -2206,7 +2205,7 @@ loc_CD44:
         LDY BOMBMAN_X
         JSR sub_CF60
         BNE loc_CD69
-        JSR ADJUST_BOMBMAN_HPOS ; Сместить немного бомбермена влево или вправо после установки бомбы
+        JSR ADJUST_BOMBMAN_HPOS ; Move the bomber a little to the left or right after placing the bomb
         INC BOMBMAN_V
         LDA BOMBMAN_V
         CMP #$10
@@ -2242,7 +2241,7 @@ loc_CD7B:
         LDY BOMBMAN_X
         JSR sub_CF60
         BNE loc_CD9C
-        JSR ADJUST_BOMBMAN_HPOS ; Сместить немного бомбермена влево или вправо после установки бомбы
+        JSR ADJUST_BOMBMAN_HPOS ; Move the bomber a little to the left or right after placing the bomb
         DEC BOMBMAN_V
         BPL loc_CD9C
         LDA #$F
@@ -2276,7 +2275,7 @@ loc_CDAE:
         DEY
         JSR sub_CF60
         BNE loc_CDCF
-        JSR ADJUST_BOMBMAN_VPOS ; Сместить немного бомбермена вверх или вниз после установки бомбы
+        JSR ADJUST_BOMBMAN_VPOS ; Move the bomber up or down a bit after placing the bomb
         DEC BOMBMAN_U
         BPL loc_CDCF
         LDA #$F
@@ -2309,7 +2308,7 @@ loc_CDDF:
         INY
         JSR sub_CF60
         BNE loc_CE04
-        JSR ADJUST_BOMBMAN_VPOS ; Сместить немного бомбермена вверх или вниз после установки бомбы
+        JSR ADJUST_BOMBMAN_VPOS ; Move the bomber up or down a bit after placing the bomb
         INC BOMBMAN_U
         LDA BOMBMAN_U
         CMP #$10
@@ -2332,7 +2331,7 @@ loc_CE06:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Сместить немного бомбермена влево или вправо после установки бомбы
+; Move the bomber a little to the left or right after placing the bomb
 
 ADJUST_BOMBMAN_HPOS:            
         LDA BOMBMAN_U
@@ -2354,7 +2353,7 @@ DONT_ADJUST:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Сместить немного бомбермена вверх или вниз после установки бомбы
+; Move the bomber up or down a bit after placing the bomb
 
 ADJUST_BOMBMAN_VPOS:            
         LDA BOMBMAN_V
@@ -2409,7 +2408,7 @@ loc_CE54:
         LDA #1
 
 loc_CE56:               
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         RTS
 ; ---------------------------------------------------------------------------
 
@@ -2421,7 +2420,7 @@ INCORRECT_FRAMENUM:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Нарисовать бомбермена (обновить спрайт)
+; Draw the bomberman (update the sprite)
 
 DRAW_BOMBERMAN:             
         LDA BOMBMAN_FRAME
@@ -2434,7 +2433,7 @@ DRAW_BOMBERMAN:
         LDA BOMBMAN_X
         CMP #8
         BCC DONT_SCROLL
-        LDY #$F0 ; 'Ё'
+        LDY #$F0
         CMP #23
         BCS DONT_SCROLL
         ASL
@@ -2444,7 +2443,7 @@ DRAW_BOMBERMAN:
         CLC
         ADC BOMBMAN_U
         SEC
-        SBC #$80 ; 'А'
+        SBC #$80
         TAY
 
 DONT_SCROLL:                
@@ -2471,7 +2470,7 @@ DONT_SCROLL:
         STA SPR_Y
         LDX BOMBMAN_FRAME
         LDA BOMBER_ANIM,X
-        JMP SPR_DRAW    ; Обновить спрайт (в регистре A - порядковый номер спрайтового образа 16x16)
+        JMP SPR_DRAW    ; Update the sprite (the A register is the sequential number of the 16x16 sprite image)
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2503,7 +2502,7 @@ sub_CEA7:
         STA SPR_Y
         LDX BOMBMAN_FRAME
         LDA byte_CED2,X
-        JMP SPR_DRAW    ; Обновить спрайт (в регистре A - порядковый номер спрайтового образа 16x16)
+        JMP SPR_DRAW    ; Update the sprite (the A register is the sequential number of the 16x16 sprite image)
 
 ; ---------------------------------------------------------------------------
 byte_CED2:  .BYTE $10,$11,$12,$11   
@@ -2514,7 +2513,7 @@ BOMBER_ANIM:    .BYTE   0,  1,  2,  1,  3,  4,  5,  4,  6,  7,  8,  7,  9, 10, 1
 
 loc_CEE9:               
         LDA #4
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         LDA #$A
         JSR sub_DD83
         LDX EXIT_ENEMY_TYPE
@@ -2647,7 +2646,7 @@ loc_CF82:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Возвратить в A значение кнопок P1 | P2
+; Return to A the value of buttons P1 | P2
 
 GET_INPUT:              
         LDA DEMOPLAY
@@ -2659,10 +2658,10 @@ GET_INPUT:
         LDY #0
         LDA (DEMOKEY_DATA),Y
         STA DEMOKEY_TIMEOUT
-        JSR DEMO_GETNEXT    ; Выбрать следующий байт из данных демонстрации
+        JSR DEMO_GETNEXT    ; Fetch the next byte from the demo data
         LDA (DEMOKEY_DATA),Y
         STA DEMOKEY_PAD1
-        JSR DEMO_GETNEXT    ; Выбрать следующий байт из данных демонстрации
+        JSR DEMO_GETNEXT    ; Fetch the next byte from the demo data
         PLA
 
 SKIP_DEMO_KEY:              
@@ -2677,7 +2676,7 @@ NOT_DEMO:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Выбрать следующий байт из данных демонстрации
+; Fetch the next byte from the demo data
 
 DEMO_GETNEXT:               
         INC DEMOKEY_DATA
@@ -2690,7 +2689,7 @@ DEMO_GETNEXT_HI:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Монстры.
+; Monsters.
 
 THINK:                  
         LDA #0
@@ -2715,10 +2714,10 @@ loc_CFC5:
 loc_CFCF:               
         ASL
         TAY
-        JSR ENEMY_SAVE  ; Запихать описание текущего монстра во временные переменные
-        LDA #$CF ; '¦'
+        JSR ENEMY_SAVE  ; Put the description of the current monster in temporary variables
+        LDA #$CF
         PHA
-        LDA #$E2 ; 'т'
+        LDA #$E2
         PHA
         LDA THINK_PROC-1,Y
         PHA
@@ -2726,7 +2725,7 @@ loc_CFCF:
         PHA
         RTS
 ; ---------------------------------------------------------------------------
-        JSR ENEMY_LOAD  ; Точка возврата после процедуры THINK монстра
+        JSR ENEMY_LOAD  ; Return point after the THINK monster procedure
         JSR loc_D006
 
 THINK_NEXT:             
@@ -2793,7 +2792,7 @@ loc_D010:
         SBC #0
         BNE locret_D08B
         LDA byte_4F
-        CMP #$F8 ; '°'
+        CMP #$F8
         BCS locret_D08B
         STA SPR_X
         LDA M_Y
@@ -2809,7 +2808,7 @@ loc_D010:
         LDA MONSTER_ATTR,Y
         STA SPR_COL
         LDA MONSTER_TILE,Y
-        JSR SPR_DRAW    ; Обновить спрайт (в регистре A - порядковый номер спрайтового образа 16x16)
+        JSR SPR_DRAW    ; Update the sprite (the A register is the sequential number of the 16x16 sprite image)
         LDA M_FRAME
         CMP #$20 ; ' '
         BCS locret_D08B
@@ -2824,7 +2823,7 @@ loc_D010:
         CMP BOMBMAN_Y
         BNE locret_D08B
         LDA #5
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         LDA #1
         STA byte_5C
         LDA #12
@@ -2868,7 +2867,7 @@ loc_D08C:
         SBC #0
         BNE loc_D0F7
         LDA byte_4F
-        CMP #$F8 ; '°'
+        CMP #$F8
         BCS loc_D0F7
         STA SPR_X
         LDA M_Y
@@ -2935,7 +2934,7 @@ loc_D11C:
         BNE locret_D123
 
 loc_D121:               
-        LDY #$FC ; '№'
+        LDY #$FC
 
 locret_D123:                
         RTS
@@ -2969,7 +2968,7 @@ MONSTER_ATTR:   .BYTE   1,  1,  1,  1,  3,  3,  3,  3,  2,  2,  2,  2,  1,  1,  
 
 ; =============== S U B R O U T I N E =======================================
 
-; Запихать описание текущего монстра во временные переменные
+; Put the description of the current monster in temporary variables
 
 ENEMY_SAVE:             
         STX M_ID
@@ -3002,7 +3001,7 @@ ENEMY_SAVE:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Восстановить данные монстра из временных переменных
+; Recover monster data from temporary variables
 
 ENEMY_LOAD:             
         LDX M_ID
@@ -3035,14 +3034,14 @@ loc_D242:
         RTS
 
 ; ---------------------------------------------------------------------------
-THINK_PROC: .WORD $D320     ; Розовая луковица
-        .WORD $D2E7     ; Синий перчик
-        .WORD $D2C8     ; Бочка
-        .WORD $D305     ; Колобок
-        .WORD $D2B4     ; Облачко
-        .WORD $D319     ; Медуза
-        .WORD $D3A0     ; Кабанчик
-        .WORD $D38A     ; Монетка
+THINK_PROC: .WORD $D320     ; Pink bulb
+        .WORD $D2E7     ; Blue Pepper
+        .WORD $D2C8     ; Barrel
+        .WORD $D305     ; Kolobok
+        .WORD $D2B4     ; Cloud
+        .WORD $D319     ; Medusa
+        .WORD $D3A0     ; Boar
+        .WORD $D38A     ; Coin
         .WORD $D2A2
         .WORD $D264
         .WORD $D25B
@@ -3112,7 +3111,7 @@ locret_D2B3:
 locret_D2B4:                
         RTS
 ; ---------------------------------------------------------------------------
-        LDA #$10        ; Пятый монстр - облачко
+        LDA #$10        ; The fifth monster is a cloud
         LDY #$13
         JSR sub_D5DA
         JSR sub_D37E
@@ -3125,7 +3124,7 @@ locret_D2B4:
 locret_D2C8:                
         RTS
 ; ---------------------------------------------------------------------------
-        LDA #8      ; Третий монстр - Бочка
+        LDA #8      ; The Third Monster - The Barrel
         LDY #$B
         JSR sub_D5DA
         JSR sub_D37E
@@ -3134,7 +3133,7 @@ locret_D2C8:
         BEQ locret_D2C8
         DEC byte_4C
         LDA byte_4C
-        CMP #$96 ; 'Ц'
+        CMP #$96
         BCS loc_D2E4
         JSR TURN_HORIZONTALLY
 
@@ -3145,7 +3144,7 @@ loc_D2E4:
 locret_D2E7:                
         RTS
 ; ---------------------------------------------------------------------------
-        LDA #4      ; Второй монстр - синий перчик
+        LDA #4      ; The second monster is a blue pepper
         LDY #7
         JSR sub_D5DA
         JSR sub_D37E
@@ -3154,14 +3153,14 @@ locret_D2E7:
         BEQ locret_D2E7
         DEC byte_4C
         LDA byte_4C
-        CMP #$96 ; 'Ц'
+        CMP #$96 ; 'Р¦'
         BCS loc_D303
         JSR TURN_VERTICALLY
 
 loc_D303:               
         JMP loc_D33F
 ; ---------------------------------------------------------------------------
-        LDA #$C     ; Четвертый монстр - Колобок
+        LDA #$C     ; The fourth monster is Kolobok.
         LDY #$F
         JSR sub_D5DA
         JSR sub_D37E
@@ -3176,11 +3175,11 @@ loc_D310:
 THINK_SKIP:             
         RTS
 ; ---------------------------------------------------------------------------
-        LDA #20     ; Шестой монстр - Медуза
+        LDA #20     ; The sixth monster is Medusa
         LDY #23
         JMP loc_D325
 ; ---------------------------------------------------------------------------
-        LDA #0      ; Первый монстр - розовая луковица
+        LDA #0      ; The first monster is a pink bulb
         LDY #3
 
 loc_D325:               
@@ -3203,7 +3202,7 @@ loc_D33F:
         BEQ loc_D365
         DEC byte_49
         LDA M_FACE
-        JSR STEP_MONSTER    ; Сделать шаг монстром (в регистре A - направление взгляда)
+        JSR STEP_MONSTER    ; Make a monster step (in the A register - the direction of the look)
         BEQ locret_D364
         CMP #3
         BCC loc_D360
@@ -3259,7 +3258,7 @@ loc_D388:
         RTS
 
 ; ---------------------------------------------------------------------------
-        LDA #$1C        ; Восьмой монстр - монетка
+        LDA #$1C        ; The eighth monster is a coin
         LDY #$1F
         JSR sub_D5DA
         LDY #0
@@ -3272,7 +3271,7 @@ loc_D39C:
         STY byte_48
         JMP loc_D3AB
 ; ---------------------------------------------------------------------------
-        LDA #$18        ; Седьмой монстр - кабанчик
+        LDA #$18        ; The seventh monster is a boar
         LDY #$1B
         JSR sub_D5DA
         JSR sub_D37E
@@ -3321,7 +3320,7 @@ loc_D3E0:
 
 loc_D3EE:               
         LDA M_FACE
-        JSR STEP_MONSTER    ; Сделать шаг монстром (в регистре A - направление взгляда)
+        JSR STEP_MONSTER    ; Make a monster step (in the A register - the direction of the look)
         BEQ locret_D405
         CMP #3
         BCS loc_D406
@@ -3355,11 +3354,11 @@ TURN_HORIZONTALLY:
         BNE NO_VTURN
         LDA M_Y
         CMP BOMBMAN_Y
-        BNE NO_VTURN    ; Если BY != MY, то выйти
+        BNE NO_VTURN    ; If BY != MY, then exit
         LDA M_X
         CMP BOMBMAN_X
         LDA #1
-        BCC FACE_RIGHT  ; Если BX > MX, то повернуть направо, иначе повернуть налево.
+        BCC FACE_RIGHT  ; If BX > MX, then turn right, otherwise turn left.
         LDA #3
 
 FACE_RIGHT:             
@@ -3377,11 +3376,11 @@ TURN_VERTICALLY:
         BNE NO_VTURN
         LDA M_X
         CMP BOMBMAN_X
-        BNE NO_HTURN    ; Если BX != MX, то выйти
+        BNE NO_HTURN    ; If BX != MX, then exit
         LDA M_Y
         CMP BOMBMAN_Y
         LDA #4
-        BCC FACE_DOWN   ; Если BY > MY, то повернуть вниз, иначе повернуть вверх.
+        BCC FACE_DOWN   ; If BY > MY, turn down, otherwise turn up.
         LDA #2
 
 FACE_DOWN:              
@@ -3477,7 +3476,7 @@ ENEMY_COLLISION:
 
 BRICK_WALL:             
         LDA M_TYPE
-        CMP #5      ; Облачко, медуза и монетка могут проходить сквозь кирпичные стены
+        CMP #5      ; A cloud, a jellyfish and a coin can pass through brick walls
         BEQ locret_D4BF
         CMP #6
         BEQ locret_D4BF
@@ -3487,7 +3486,7 @@ BRICK_WALL:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Сделать шаг монстром (в регистре A - направление взгляда)
+; Make a monster step (in the A register - the direction of the look)
 
 STEP_MONSTER:               
         LDX #0
@@ -3730,7 +3729,7 @@ loc_D5F0:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Обновить спрайт (в регистре A - порядковый номер спрайтового образа 16x16)
+; Update the sprite (the A register is the sequential number of the 16x16 sprite image)
 
 SPR_DRAW:               
         STX SPR_SAVEDX
@@ -3741,7 +3740,7 @@ SPR_DRAW:
         STA SPR_ID
         PLA
         ASL
-        AND #$E0 ; 'р'
+        AND #$E0
         ORA SPR_ID
         STA SPR_ID
         LDA SPR_TAB_INDEX
@@ -3760,18 +3759,18 @@ INDEX_UNBOUND:
         TAY
         LDA SPR_ATTR
         BNE loc_D622
-        JSR SPR_WRITE_OBJ_HALF ; Записывает в таблицу спрайтов одну из половинок (8x16) спрайтового образа.
+        JSR SPR_WRITE_OBJ_HALF ; Writes one half (8x16) of a sprite image to the sprite table.
         INC SPR_ID
         JMP loc_D629
 ; ---------------------------------------------------------------------------
 
 loc_D622:               
         INC SPR_ID
-        JSR SPR_WRITE_OBJ_HALF ; Записывает в таблицу спрайтов одну из половинок (8x16) спрайтового образа.
+        JSR SPR_WRITE_OBJ_HALF ; Writes one half (8x16) of a sprite image to the sprite table.
         DEC SPR_ID
 
 loc_D629:               
-        JSR SPR_WRITE_OBJ_HALF ; Записывает в таблицу спрайтов одну из половинок (8x16) спрайтового образа.
+        JSR SPR_WRITE_OBJ_HALF ; Writes one half (8x16) of a sprite image to the sprite table.
         LDX SPR_SAVEDX
         LDY SPR_SAVEDY
         RTS
@@ -3779,11 +3778,11 @@ loc_D629:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Записывает в таблицу спрайтов одну из половинок (8x16) спрайтового образа.
+; Writes one half (8x16) of a sprite image to the sprite table.
 
 SPR_WRITE_OBJ_HALF:         
         LDA SPR_Y
-        STA SPR_TAB,Y   ; Регистр Y содержит смещение в таблице спрайтов (корректируется автоматически).
+        STA SPR_TAB,Y   ; The Y register contains the offset in the sprite table (corrected automatically).
         LDA SPR_ID
         PHA
         STA SPR_TAB+1,Y
@@ -3823,10 +3822,10 @@ RAND:
         LDA SEED
         ROL
         ROL
-        EOR #$41 ; 'A'
+        EOR #$41
         ROL
         ROL
-        EOR #$93 ; 'У'
+        EOR #$93
         ADC SEED+1
         STA SEED
         ROL
@@ -3890,7 +3889,7 @@ loc_D6BE:
         ASL
         ASL
         STA ENEMY_FRAME,X
-        LDA #8      ; Поместить монстра по центру клетки (8; 8)
+        LDA #8      ; Place the monster in the center of the cell (8; 8)
         STA ENEMY_U,X
         STA ENEMY_V,X
         JSR RAND
@@ -3923,8 +3922,8 @@ loc_D703:
 
 ; ---------------------------------------------------------------------------
 
-; Таблица популяции монстров на каждом из 50 уровней.
-; На карте может находиться максимум до 10 монстров.
+; Monster population table for each of the 50 levels.
+; The map can be a maximum of 10 monsters.
 
 MONSTER_TAB
     BYTE    1, 1, 1, 1, 1, 1, 0, 0, 0, 0
@@ -3980,7 +3979,7 @@ MONSTER_TAB
 
 ; =============== S U B R O U T I N E =======================================
 
-; Добавить в TILE_TAB новый тайл
+; Add a new tile to TILE_TAB
 
 DRAW_TILE:              
         STX TEMP_X
@@ -4036,7 +4035,7 @@ loc_D93A:
         ADC #2
         ASL
         STA byte_22
-        AND #$FC ; '№'
+        AND #$FC
         ASL
         STA byte_1B
         LDA byte_21
@@ -4059,7 +4058,7 @@ loc_D93A:
         ADC byte_23
         ASL
         PHA
-        LDA #$FC ; '№'
+        LDA #$FC
         STA byte_1D
         PLA
         TAX
@@ -4205,9 +4204,9 @@ sub_DA8E:
         STA STAGE_STARTED
         STA INMENU
         STA APU_MUSIC
-        LDY #$9F ; 'Я'
-        LDA #$20 ; ' '
-        LDX #$E7 ; 'ч'
+        LDY #$9F
+        LDA #$20
+        LDX #$E7
         JSR sub_DC41
         JSR PPUE
         LDA #6
@@ -4229,7 +4228,7 @@ loc_DAB5:
 loc_DAC9:               
         JSR WAITVBL
         LDA JOYPAD1
-        AND #$8F ; 'П'
+        AND #$8F
         BNE loc_DAF8
         DEX
         BNE loc_DAC9
@@ -4245,7 +4244,7 @@ loc_DAC9:
 loc_DAE9:               
         JSR WAITVBL
         LDA JOYPAD1
-        AND #$8F ; 'П'
+        AND #$8F
         BNE loc_DAF8
         DEX
         BNE loc_DAE9
@@ -4279,7 +4278,7 @@ loc_DB1A:
         STA byte_20
 
 loc_DB1E:               
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
         JMP loc_DAB5
 ; ---------------------------------------------------------------------------
 
@@ -4303,7 +4302,7 @@ loc_DB39:
         STA byte_20
 
 loc_DB3D:               
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
 
 loc_DB40:               
         JMP loc_DAB5
@@ -4332,7 +4331,7 @@ loc_DB43:
         INY
         CPY #$14
         BEQ loc_DB7A
-        JSR WAITUNPRESS ; Ждать отпускания кнопки
+        JSR WAITUNPRESS ; Wait for the button to release
         JMP loc_DAB5
 ; ---------------------------------------------------------------------------
 
@@ -4489,34 +4488,34 @@ locret_DC52:
 
 ; ---------------------------------------------------------------------------
 unk_DC53:   .BYTE $20       
-        .BYTE $88 ; И
+        .BYTE $88
         .BYTE "CONGRATULATIONS"
         .BYTE   0
         .BYTE $20
-        .BYTE $E4 ; ф
+        .BYTE $E4
         .BYTE "YOU:HAVE:SUCCEED"
         .BYTE "ED:IN"
         .BYTE   0
-        .BYTE $21 ; !
-        .BYTE $22 ; "
+        .BYTE $21
+        .BYTE $22
         .BYTE "HELPING:BOMBERMAN:TO:BECOME"
         .BYTE   0
-        .BYTE $21 ; !
-        .BYTE $62 ; b
+        .BYTE $21
+        .BYTE $62
         .BYTE "A:HUMAN:BEING"
         .BYTE   0
-        .BYTE $21 ; !
-        .BYTE $A4 ; д
+        .BYTE $21
+        .BYTE $A4
         .BYTE "MAYBE:YOU:CAN:RE"
         .BYTE "COGNIZE:HIM"
         .BYTE   0
-        .BYTE $21 ; !
-        .BYTE $E2 ; т
+        .BYTE $21
+        .BYTE $E2
         .BYTE "IN:ANOTHER:HUDSO"
         .BYTE "N:SOFT:GAME"
         .BYTE   0
-        .BYTE $22 ; "
-        .BYTE $4B ; K
+        .BYTE $22
+        .BYTE $4B
         .BYTE "GOOD:BYE"
         .BYTE   0
         .BYTE "ENTER:SECRET:CODE"
@@ -4556,8 +4555,8 @@ GAME_OVER_SCREEN:
         JSR PPUD
         JSR VBLD
         JSR SETSTAGEPAL
-        LDA #$21 ; '!'
-        LDX #$EA ; 'ъ'
+        LDA #$21
+        LDX #$EA
         JSR VRAMADDR
         LDX #8
 
@@ -4656,14 +4655,14 @@ loc_DDC2:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Нарисовать строки "TIME" и "LEFT XX"
+; Draw lines "TIME" and "LEFT XX"
 
 TIME_AND_LIFE:              
         LDA #$20 ; ' '
         LDX #0
         JSR VRAMADDR
-        LDX #$80 ; 'А'
-        LDA #$3A ; ':'
+        LDX #$80
+        LDA #$3A
 
 loc_DDD2:               
         STA PPU_DATA
@@ -4698,7 +4697,7 @@ loc_DE07:
         DEX
         BPL loc_DE07
         LDA LIFELEFT
-        JMP PUTNUMBER   ; Вывести двухзначное число, заданное в регистре A.
+        JMP PUTNUMBER   ; Print a two-digit number given in the A register.
 
 ; ---------------------------------------------------------------------------
 aEmit:      .BYTE "EMIT"            
@@ -4714,7 +4713,7 @@ STAGE_SCREEN:
         STA H_SCROLL
         JSR SETSTAGEPAL
         LDA #$21 ; '!'
-        LDX #$EA ; 'ъ'
+        LDX #$EA
         JSR VRAMADDR
         LDX #4
 
@@ -4724,10 +4723,10 @@ PUT_STAGE_STR:
         DEX
         BPL PUT_STAGE_STR
         LDA #$21 ; '!'
-        LDX #$F0 ; 'Ё'
+        LDX #$F0
         JSR VRAMADDR
         LDA STAGE
-        JSR PUTNUMBER   ; Вывести двухзначное число, заданное в регистре A.
+        JSR PUTNUMBER   ; Print a two-digit number given in the A register.
         JSR VBLE
         JMP PPUE
 
@@ -4743,8 +4742,8 @@ BONUS_STAGE_SCREEN:
         LDA #0
         STA H_SCROLL
         JSR SETSTAGEPAL
-        LDA #$21 ; '!'
-        LDX #$EA ; 'ъ'
+        LDA #$21
+        LDX #$EA
         JSR VRAMADDR
         LDX #$A
 
@@ -4778,7 +4777,7 @@ loc_DE95:
         CPX #$10
         BNE loc_DE95
         JSR VRAMADDRZ
-        JSR DRAWMENUTEXT    ; Нарисовать текст в меню (авторские права, лицензия)
+        JSR DRAWMENUTEXT    ; Draw text in the menu (copyright, license)
         LDA #$20 ; ' '
         LDX #0
         JSR VRAMADDR
@@ -4802,8 +4801,8 @@ loc_DEC2:
         STA PPU_DATA
         INX
         BNE loc_DEC2
-        LDA #$22 ; '"'
-        LDX #$AE ; 'о'
+        LDA #$22
+        LDX #$AE
         JSR VRAMADDR
         LDX #0
 
@@ -4904,23 +4903,23 @@ loc_DF52:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Вывести двухзначное число, заданное в регистре A.
+; Output a two-digit number given in the A register.
 
 PUTNUMBER:              
         LDY #$30 ; '0'
-        SEC         ; $30 - Цифры от 0 до 9
+        SEC         ; $30 - Numbers from 0 to 9
 
 DECADES:                
-        SBC #10     ; Поместить количество десятков в Y
+        SBC #10     ; Place the number of tens in Y
         BCC DONE_DECADES
         INY
-        BNE DECADES     ; Поместить количество десятков в Y
+        BNE DECADES     ; Place the number of tens in Y
 
 DONE_DECADES:               
         ADC #$3A ; ':'
-        CPY #$30 ; '0'      ; Если число от 0 до 9, то вывести пробел вместо количества десятков
+        CPY #$30 ; '0'      ; If the number is from 0 to 9, print a space instead of the number of tens
         BNE PUTNUMB2
-        LDY #$3A ; ':'      ; $3A - Это пробел.
+        LDY #$3A ; ':'      ; $3A - Space.
 
 PUTNUMB2:               
         STY PPU_DATA
@@ -4987,24 +4986,24 @@ MAINMENU_LO:    .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C0,$B6,$E9,$B8,$C
         .BYTE $D8,$E9,$EA,$CE,$D8,$F3,$CB,$CD,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
         .BYTE $B0 ; -
         .BYTE $B0 ; -
-        .BYTE $F4 ; Ї
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
-        .BYTE $F9 ; •
+        .BYTE $F4
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
+        .BYTE $F9
 
 ; =============== S U B R O U T I N E =======================================
 
-; Нарисовать текст в меню (авторские права, лицензия)
+; Draw text in the menu (copyright, license)
 
 DRAWMENUTEXT:               
         LDY #0
@@ -5128,7 +5127,7 @@ loc_E30A:
         SEC
         SBC #7
         AND #$F
-        STA _passworf_buffer,X
+        STA _password_buffer,X
         STA SEED
         CPX #$28 ; '('
         BNE loc_E30A
@@ -5138,7 +5137,7 @@ loc_E30A:
         LDX #2
 
 loc_E32B:               
-        LDA _passworf_buffer,X
+        LDA _password_buffer,X
         TAY
         LDA aAofkcpgelbhmjd,Y ; "AOFKCPGELBHMJDNI"
         STA PPU_DATA
@@ -5201,7 +5200,7 @@ sub_E399:
         BNE loc_E3A7
         INC byte_B1
         LDA #6
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
 
 loc_E3A7:               
         LDA byte_A8
@@ -5225,7 +5224,7 @@ loc_E3BD:
         CMP byte_AB
         BNE locret_E3E6
         LDA #4
-        STA APU_SOUND   ; Проиграть звук
+        STA APU_SOUND   ; Play the sound
         LDX byte_9D
         LDA byte_E4BC,X
         CMP #$64 ; 'd'
@@ -5358,7 +5357,7 @@ loc_E47D:
 
 loc_E486:               
         LDA byte_A5
-        CMP #$F8 ; '°'
+        CMP #$F8
         BCS loc_E450
         RTS
 ; ---------------------------------------------------------------------------
@@ -5367,7 +5366,7 @@ loc_E48D:
         LDA byte_9F
         BEQ locret_E467
         LDA byte_A6
-        CMP #$F8 ; '°'
+        CMP #$F8
         BCS loc_E450
         RTS
 ; ---------------------------------------------------------------------------
@@ -5418,7 +5417,7 @@ APU_ABORT:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Проиграть мелодию
+; Play a tune
 
 APU_PLAY_MELODY:            
         LDA APU_DISABLE
@@ -5429,7 +5428,7 @@ APU_PLAY_MELODY:
         CMP #$B
         BCS APU_STOP
         STA APU_TEMP
-        ORA #$80 ; 'А'
+        ORA #$80
         STA APU_MUSIC
         DEC APU_TEMP
         LDA APU_TEMP
@@ -5529,7 +5528,7 @@ APU_WRITE_REGS:
 FIX_TRIANGLE:               
         ASL
         BPL FIX_DELAY
-        LDA #$7F ; ''
+        LDA #$7F
 
 FIX_DELAY:              
         STA byte_D6,X
@@ -5554,10 +5553,10 @@ loc_E57B:
         BEQ loc_E59D
 
 loc_E593:               
-        LDA #$9F ; 'Я'
+        LDA #$9F
         CPX #2
         BNE loc_E5A1
-        LDA #$7F ; ''
+        LDA #$7F
         BNE loc_E5A1
 
 loc_E59D:               
@@ -5593,11 +5592,11 @@ ABORT_WRITE:
 ; ---------------------------------------------------------------------------
 
 CONTROL_BYTE:               
-        AND #$F0 ; 'Ё'
-        CMP #$F0 ; 'Ё'
+        AND #$F0
+        CMP #$F0
         BEQ EXEC_EFFECT
         LDA APU_TEMP
-        AND #$7F ; ''
+        AND #$7F
         STA byte_B9,X
         JMP APU_WRITE_REGS
 ; ---------------------------------------------------------------------------
@@ -5688,7 +5687,7 @@ loc_E63F:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Сбросить состояние APU
+; Reset APU state
 
 APU_RESET:              
         LDA #0
@@ -5707,7 +5706,7 @@ APU_RESET:
 
 ; =============== S U B R O U T I N E =======================================
 
-; Проиграть звук
+; Play the sound
 
 APU_PLAY_SOUND:             
         LDX #2
@@ -5720,7 +5719,7 @@ MUTE_CHANNEL:
 MUTE_NEXT_CHAN:             
         DEX
         BPL MUTE_CHANNEL
-        LDA APU_SOUND   ; Проиграть звук
+        LDA APU_SOUND   ; Play the sound
         BMI UPDATE_SOUND
         CMP #7
         BCS WRONG_SOUND ; >= 7
@@ -5729,14 +5728,14 @@ MUTE_NEXT_CHAN:
         LDX APU_PATTERN
         BEQ START_SOUND
         TXA
-        ORA #$80 ; 'А'
-        STA APU_SOUND   ; Проиграть звук
+        ORA #$80
+        STA APU_SOUND   ; Play the sound
         BNE UPDATE_SOUND
 
 START_SOUND:                
         STA APU_PATTERN
-        ORA #$80 ; 'А'
-        STA APU_SOUND   ; Проиграть звук
+        ORA #$80
+        STA APU_SOUND   ; Play the sound
         LDA #0
         STA APU_SOUND_MOD
         STA APU_SOUND_MOD+1
@@ -5767,7 +5766,7 @@ WRONG_SOUND:
 
 ; ---------------------------------------------------------------------------
 MOD_SOUND_TAB:  
-        .WORD APU_RESET-1   ; Сбросить состояние APU
+        .WORD APU_RESET-1   ; Reset APU state
         .WORD S1_START-1
         .WORD S2_START-1
         .WORD S3_START-1
@@ -5812,7 +5811,7 @@ S3_START:
         STA APU_NOISE_REG+3
         LDA #$FF
         STA APU_SQUARE2_REG
-        LDA #$84 ; 'Д'
+        LDA #$84
         STA APU_SQUARE2_REG+1
         LDA #0
         STA APU_SQUARE2_REG+2
@@ -5826,13 +5825,13 @@ S3_START:
 S3_UPDATE:              
         DEC APU_SDELAY
         BNE locret_E727
-        LDA #$DF ; '-'
+        LDA #$DF
         STA APU_SQUARE2_REG
-        LDA #$84 ; 'Д'
+        LDA #$84
         STA APU_SQUARE2_REG+1
         LDA #0
         STA APU_SQUARE2_REG+2
-        LDA #$81 ; 'Б'
+        LDA #$81
         STA APU_SQUARE2_REG+3
         LDA #0
         STA APU_PATTERN
@@ -5862,9 +5861,9 @@ S4_UPDATE:
 
 S4_PITCH2:              
         DEC APU_SDELAY+1
-        LDA #$84 ; 'Д'
+        LDA #$84
         STA APU_SQUARE2_REG
-        LDA #$8B ; 'Л'
+        LDA #$8B
         STA APU_SQUARE2_REG+1
         LDX APU_SDELAY+1
         LDA S4_PITCH_TAB,X
@@ -5892,7 +5891,7 @@ S5_START:
         STA APU_NOISE_REG+3
         LDA #$1F
         STA APU_SQUARE2_REG
-        LDA #$8F ; 'П'
+        LDA #$8F
         STA APU_SQUARE2_REG+1
         LDA #0
         STA APU_SQUARE2_REG+2
