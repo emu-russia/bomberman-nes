@@ -11,7 +11,7 @@ ERROR(BMAN.NAS,4496): Unknown command SUCCEED"
 ERROR(BMAN.NAS,4497): Reserved keyword used as label 'BYTE'
 ```
 
-Breaknes считает что символы `:` внутри строк - это метки:
+Breakasm считает что символы `:` внутри строк - это метки:
 
 ```
 unk_DC53:   BYTE $20       
