@@ -7,28 +7,6 @@ Build using the Breakasm assembler.
 ### Проблема 1
 
 ```
-ERROR(BMAN.NAS,4496): Unknown command SUCCEED"
-ERROR(BMAN.NAS,4497): Reserved keyword used as label 'BYTE'
-```
-
-Breakasm считает что символы `:` внутри строк - это метки:
-
-```
-unk_DC53:   BYTE $20       
-        BYTE $88
-        BYTE "CONGRATULATIONS"
-        BYTE   0
-        BYTE $20
-        BYTE $E4
-        BYTE "YOU:HAVE:SUCCEED"
-        BYTE "ED:IN"
-```
-
-Это проблема процедуры парсера строки `parse_line`.
-
-### Проблема 2
-
-```
 ERROR(BMAN.NAS,43): Undefined label 'SPR_TAB+1' (BABADABA)
 ERROR(BMAN.NAS,45): Undefined label 'SPR_TAB+2' (BABADABA)
 ERROR(BMAN.NAS,47): Undefined label 'SPR_TAB+3' (BABADABA)
