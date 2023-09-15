@@ -113,7 +113,7 @@ byte_88             EQU $88
 byte_8D             EQU $8D 
 byte_92             EQU $92 
 TIMELEFT            EQU $93 
-byte_94             EQU $94 
+DEBUG_MODE          EQU $94 		; render hidden tiles (doors and powerups) as red half-destroyed walls
 byte_95             EQU $95 
 MTAB_PTR            EQU $97 
 byte_99             EQU $99 

@@ -686,7 +686,7 @@ loc_C3C7:
         STA BONUS_SPEED
         STA BONUS_NOCLIP
         STA BONUS_FIRESUIT
-        STA byte_94
+        STA DEBUG_MODE
         LDA DEMOPLAY
         BEQ loc_C40A
         LDA #9
@@ -1824,7 +1824,7 @@ loc_CB17:
         STA byte_1F
 
 loc_CB1B:               
-        LDA byte_94
+        LDA DEBUG_MODE
         BEQ loc_CB24
         LDA (word_26),Y
         JMP loc_CB30
