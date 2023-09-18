@@ -114,27 +114,31 @@ byte_8D             EQU $8D
 byte_92             EQU $92 
 TIMELEFT            EQU $93 
 DEBUG_MODE          EQU $94 		; render hidden tiles (doors and powerups) as red half-destroyed walls
-byte_95             EQU $95 
+PW_CXSUM4           EQU $95 		; Checksum for whole password 
 MTAB_PTR            EQU $97 
-byte_99             EQU $99 
-byte_9A             EQU $9A 
-byte_9B             EQU $9B 
-byte_9C             EQU $9C 
-byte_9D             EQU $9D 
-byte_9E             EQU $9E 
-byte_9F             EQU $9F 
-byte_A0             EQU $A0 
-byte_A1             EQU $A1 
-byte_A2             EQU $A2 
-byte_A3             EQU $A3 
-byte_A4             EQU $A4 
-byte_A5             EQU $A5 
-byte_A6             EQU $A6 
-byte_A7             EQU $A7 
-byte_A8             EQU $A8 
-byte_A9             EQU $A9 
-byte_AA             EQU $AA 
-byte_AB             EQU $AB 
+PW_CXSUM1           EQU $99 		; Checksum for characters 1..4 of password 
+PW_CXSUM2           EQU $9A  		; Checksum for characters 6..9 of password
+PW_CXSUM3           EQU $9B  		; Checksum for characters 11..14 of password
+
+; Extra bonus item criteria
+; https://tcrf.net/Bomberman_(NES)#Bonus_Items
+ENEMIES_LEFT        EQU $9C  		; 
+BONUS_AVAILABLE     EQU $9D  		; 
+ENEMIES_DEFEATED    EQU $9E 		; 
+EXIT_DWELL_TIME     EQU $9F 		; How long we are over exit tile for
+VISITS_TOP_LEFT     EQU $A0 		; 
+VISITS_TOP_RIGHT    EQU $A1 		; 
+VISITS_BOTTOM_LEFT  EQU $A2 		; 
+VISITS_BOTTOM_RIGHT EQU $A3 		; 
+BRICKS_BLOWN_UP     EQU $A4 		; 
+CHAIN_REACTIONS     EQU $A5 		; 
+KEY_TIMER           EQU $A6 		; How long at least one key is pressed for
+EXIT_BOMBED_COUNT   EQU $A7 		; 
+BONUS_STATUS        EQU $A8 		; 0 = Criteria not met / 1 = Achieved / 2 = Collected
+BONUS_TIMER         EQU $A9 		; Time which the bonus is on screen for
+EXTRA_BONUS_ITEM_X  EQU $AA 		; X position where extra bonus is placed
+EXTRA_BONUS_ITEM_Y  EQU $AB 		; Y position where extra bonus is placed
+
 DEMOKEY_DATA        EQU $AC 
 DEMOKEY_TIMEOUT     EQU $AE 
 DEMOKEY_PAD1        EQU $AF 

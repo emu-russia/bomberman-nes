@@ -14,3 +14,9 @@ The USA version of the game has been decompiled (NES-BM-USA): https://nescartdb.
 
 - PRG CRC32: A913A222
 - CHR CRC32: 1DB14E97
+
+## Credits
+
+A more elaborate code can be found here: https://github.com/picosonic/bomberman-nes
+
+Parts of the decompiled source code from there are transferred here as well.

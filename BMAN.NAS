@@ -719,19 +719,19 @@ loc_C40A:
 START_STAGE:                
         LDA #0
         STA byte_B1
-        STA byte_A8
+        STA BONUS_STATUS
         STA STAGE_STARTED
-        STA byte_9E
-        STA byte_9F
-        STA byte_9C
-        STA byte_A0
-        STA byte_A1
-        STA byte_A2
-        STA byte_A3
-        STA byte_A4
-        STA byte_A5
-        STA byte_A6
-        STA byte_A7
+        STA ENEMIES_DEFEATED
+        STA EXIT_DWELL_TIME
+        STA ENEMIES_LEFT
+        STA VISITS_TOP_LEFT
+        STA VISITS_TOP_RIGHT
+        STA VISITS_BOTTOM_LEFT
+        STA VISITS_BOTTOM_RIGHT
+        STA BRICKS_BLOWN_UP
+        STA CHAIN_REACTIONS
+        STA KEY_TIMER
+        STA EXIT_BOMBED_COUNT
         JSR STAGE_SCREEN
         LDA #2
         STA APU_MUSIC
@@ -1202,12 +1202,12 @@ loc_C707:
         LDA ENEMY_Y,Y
         CMP byte_20
         BNE loc_C74E
-        INC byte_9E
+        INC ENEMIES_DEFEATED
         LDA #0
-        STA byte_A0
-        STA byte_A1
-        STA byte_A2
-        STA byte_A3
+        STA VISITS_TOP_LEFT
+        STA VISITS_TOP_RIGHT
+        STA VISITS_BOTTOM_LEFT
+        STA VISITS_BOTTOM_RIGHT
         LDA #$64 ; 'd'
         STA byte_5C6,Y
         LDA ENEMY_TYPE,Y
@@ -1292,7 +1292,7 @@ loc_C7CB:
         BEQ loc_C838
         CPY #2
         BNE loc_C7DE
-        INC byte_A4
+        INC BRICKS_BLOWN_UP
         LDA #$80
         STA FIRE_ACTIVE,X
         JMP loc_C8A6
@@ -1341,10 +1341,10 @@ loc_C815:
         LDA #0
         STA (STAGE_MAP),Y
         JSR DRAW_TILE   ; Add a new tile to TILE_TAB
-        DEC byte_A7
+        DEC EXIT_BOMBED_COUNT
 
 loc_C828:               
-        INC byte_A7
+        INC EXIT_BOMBED_COUNT
         JSR sub_C8AD
         JMP loc_C830
 
@@ -1568,10 +1568,10 @@ BOMB_TICK_LOOP:
 loc_C999:               
         AND #7
         JSR sub_C9B6
-        LDA byte_A5
+        LDA CHAIN_REACTIONS
         CMP #$FF
         BEQ loc_C9A6
-        INC byte_A5
+        INC CHAIN_REACTIONS
 
 loc_C9A6:               
         JSR PLAY_BOOM_SOUND ; Play the sound of a bomb exploding
@@ -2076,10 +2076,10 @@ loc_CC63:
 ; ---------------------------------------------------------------------------
 
 loc_CC95:               
-        INC byte_9F
+        INC EXIT_DWELL_TIME
         LDA #0
-        STA byte_A6
-        LDA byte_9C
+        STA KEY_TIMER
+        LDA ENEMIES_LEFT
         BNE loc_CCA4    ; Check the speed of the bomberman
         LDA #1
         STA byte_5E
@@ -2098,7 +2098,7 @@ loc_CCA4:
 FAST_MOVE:              
         JSR GET_INPUT   ; Return to A the value of buttons P1 | P2
         BNE CASE_RIGHT
-        STA byte_A6
+        STA KEY_TIMER
         STA LAST_INPUT
 
 CASE_RIGHT:             
@@ -2383,7 +2383,7 @@ loc_CE2E:
         BNE loc_CE59
         LDA FRAME_CNT
         PLA
-        INC byte_A6
+        INC KEY_TIMER
         INC BOMBMAN_FRAME
         CMP BOMBMAN_FRAME
         BCC loc_CE45
@@ -2693,7 +2693,7 @@ DEMO_GETNEXT_HI:
 
 THINK:                  
         LDA #0
-        STA byte_9C
+        STA ENEMIES_LEFT
         LDA #$C0 ; 'L'
         STA byte_6B
         LDX #9
@@ -2703,7 +2703,7 @@ THINK_LOOP:
         BEQ THINK_NEXT
         CMP #9
         BCS loc_CFC5
-        INC byte_9C
+        INC ENEMIES_LEFT
 
 loc_CFC5:               
         LDY byte_5B2,X
@@ -2740,13 +2740,13 @@ THINK_END:
 
 
 sub_CFED:               
-        LDA byte_9D
+        LDA BONUS_AVAILABLE
         CLC
         ADC #$2C ; ','
         STA M_FRAME
-        LDA byte_AA
+        LDA EXTRA_BONUS_ITEM_X
         STA M_X
-        LDA byte_AB
+        LDA EXTRA_BONUS_ITEM_Y
         STA M_Y
         LDA #8
         STA M_U
@@ -5099,21 +5099,21 @@ loc_E2DB:
         DEC byte_1F
         BNE loc_E2DB
         JSR sub_E33C
-        LDA byte_99
+        LDA PW_CXSUM1
         ASL
         CLC
         ADC TEMP_X
         STA TEMP_X
-        LDA byte_9A
+        LDA PW_CXSUM2
         ASL
         CLC
         ADC TEMP_X
         STA TEMP_X
-        LDA byte_9B
+        LDA PW_CXSUM3
         ASL
         CLC
         ADC TEMP_X
-        STA byte_95
+        STA PW_CXSUM4
         LDY #0
         STY SEED
         LDX #0
@@ -5194,7 +5194,7 @@ locret_E398:
 
 
 sub_E399:               
-        LDA byte_9C
+        LDA ENEMIES_LEFT
         BNE loc_E3A7
         LDA byte_B1
         BNE loc_E3A7
@@ -5203,29 +5203,29 @@ sub_E399:
         STA APU_SOUND   ; Play the sound
 
 loc_E3A7:               
-        LDA byte_A8
+        LDA BONUS_STATUS
         BEQ loc_E3E7
         CMP #2
         BEQ locret_E398
         LDA FRAME_CNT
         AND #1
         BNE loc_E3BD
-        DEC byte_A9
+        DEC BONUS_TIMER
         BNE loc_E3BD
         LDA #2
-        STA byte_A8
+        STA BONUS_STATUS
 
 loc_E3BD:               
         JSR sub_CFED
-        LDA byte_AA
+        LDA EXTRA_BONUS_ITEM_X
         CMP BOMBMAN_X
         BNE locret_E3E6
         LDA BOMBMAN_Y
-        CMP byte_AB
+        CMP EXTRA_BONUS_ITEM_Y
         BNE locret_E3E6
         LDA #4
         STA APU_SOUND   ; Play the sound
-        LDX byte_9D
+        LDX BONUS_AVAILABLE
         LDA byte_E4BC,X
         CMP #$64 ; 'd'
         BCC loc_E3DF
@@ -5238,7 +5238,7 @@ loc_E3DF:
 
 loc_E3E2:               
         LDA #2
-        STA byte_A8
+        STA BONUS_STATUS
 
 locret_E3E6:                
         RTS
@@ -5251,14 +5251,14 @@ loc_E3E7:
         LDA BOMBMAN_Y
         CMP #1
         BNE loc_E3F8
-        INC byte_A0
+        INC VISITS_TOP_LEFT
         JMP loc_E416
 ; ---------------------------------------------------------------------------
 
 loc_E3F8:               
         CMP #$B
         BNE loc_E401
-        INC byte_A2
+        INC VISITS_BOTTOM_LEFT
         JMP loc_E416
 ; ---------------------------------------------------------------------------
 
@@ -5268,14 +5268,14 @@ loc_E401:
         LDA BOMBMAN_Y
         CMP #1
         BNE loc_E410
-        INC byte_A1
+        INC VISITS_TOP_RIGHT
         JMP loc_E416
 ; ---------------------------------------------------------------------------
 
 loc_E410:               
         CMP #$B
         BNE loc_E416
-        INC byte_A3
+        INC VISITS_BOTTOM_RIGHT
 
 loc_E416:               
         LDA BOMBMAN_X
@@ -5289,13 +5289,13 @@ loc_E416:
         CMP #$B
         BEQ loc_E434
         LDA #0
-        STA byte_A0
-        STA byte_A1
-        STA byte_A2
-        STA byte_A3
+        STA VISITS_TOP_LEFT
+        STA VISITS_TOP_RIGHT
+        STA VISITS_BOTTOM_LEFT
+        STA VISITS_BOTTOM_RIGHT
 
 loc_E434:               
-        LDX byte_9D
+        LDX BONUS_AVAILABLE
         BEQ loc_E448
         DEX
         BEQ loc_E468
@@ -5311,79 +5311,79 @@ loc_E434:
 ; ---------------------------------------------------------------------------
 
 loc_E448:               
-        LDA byte_9E
+        LDA ENEMIES_DEFEATED
         BNE locret_E467
-        LDA byte_9F
+        LDA EXIT_DWELL_TIME
         BEQ locret_E467
 
 loc_E450:               
-        LDA byte_A8
+        LDA BONUS_STATUS
         BNE locret_E467
         LDA #1
-        STA byte_A8
+        STA BONUS_STATUS
         LDA #0
-        STA byte_A9
+        STA BONUS_TIMER
         JSR RAND_COORDS
         LDA TEMP_X
-        STA byte_AA
+        STA EXTRA_BONUS_ITEM_X
         LDA TEMP_Y
-        STA byte_AB
+        STA EXTRA_BONUS_ITEM_Y
 
 locret_E467:                
         RTS
 ; ---------------------------------------------------------------------------
 
 loc_E468:               
-        LDA byte_9C
+        LDA ENEMIES_LEFT
         BNE locret_E467
-        LDA byte_A0
+        LDA VISITS_TOP_LEFT
         BEQ locret_E467
-        LDA byte_A1
+        LDA VISITS_TOP_RIGHT
         BEQ locret_E467
-        LDA byte_A2
+        LDA VISITS_BOTTOM_LEFT
         BEQ locret_E467
-        LDA byte_A3
+        LDA VISITS_BOTTOM_RIGHT
         BNE loc_E450
         RTS
 ; ---------------------------------------------------------------------------
 
 loc_E47D:               
-        LDA byte_9C
+        LDA ENEMIES_LEFT
         BNE locret_E467
-        LDA byte_A4
+        LDA BRICKS_BLOWN_UP
         BEQ loc_E450
         RTS
 ; ---------------------------------------------------------------------------
 
 loc_E486:               
-        LDA byte_A5
+        LDA CHAIN_REACTIONS
         CMP #$F8
         BCS loc_E450
         RTS
 ; ---------------------------------------------------------------------------
 
 loc_E48D:               
-        LDA byte_9F
+        LDA EXIT_DWELL_TIME
         BEQ locret_E467
-        LDA byte_A6
+        LDA KEY_TIMER
         CMP #$F8
         BCS loc_E450
         RTS
 ; ---------------------------------------------------------------------------
 
 loc_E498:               
-        LDA byte_9E
+        LDA ENEMIES_DEFEATED
         BNE locret_E467
         LDA STAGE
         ASL
         CLC
         ADC #$32 ; '2'
-        CMP byte_A4
+        CMP BRICKS_BLOWN_UP
         BEQ loc_E4A8
         BCS locret_E467
 
 loc_E4A8:               
-        LDA byte_A7
+        LDA EXIT_BOMBED_COUNT
         CMP #3
         BEQ loc_E450
         RTS
@@ -5400,7 +5400,7 @@ sub_E4AF:
         AND #1
 
 loc_E4B9:               
-        STA byte_9D
+        STA BONUS_AVAILABLE
         RTS
 
 ; ---------------------------------------------------------------------------
