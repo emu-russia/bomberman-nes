@@ -6,7 +6,7 @@
     INCLUDE "VARS.NAS"
 
 
-RESET
+RESET:
         SEI                             ; Reset PPU. Disable NMI, turn off background and sprites.
         LDA #0
         STA PPU_CTRL_REG2
@@ -26,7 +26,7 @@ WAIT_VBLANK2
 
 ; ---------------------------------------------------------------------------
 
-NMI
+NMI:
         PHA
         TXA
         PHA
@@ -46,14 +46,14 @@ NMI
         LDA #248
         STA SPR_TAB+3
 
-SEND_SPRITES
+SEND_SPRITES:
         LDA #7
         STA PPU_SPR_DMA
         LDX #9      ; Draw tiles from the circular buffer
         STX TILE_CNT
         BNE DRAW_NEXT_TILE
 
-DRAW_TILES
+DRAW_TILES:
         LDA TILE_TAB+2,Y    ; Draw new tiles until the end of the buffer, but no more than TILE_CNT tiles.
         ORA TILE_TAB,Y
         PHA
@@ -238,7 +238,7 @@ LEAVE_NMI:
 ; =============== S U B R O U T I N E =======================================
 
 
-VRAMADDR
+VRAMADDR:
         STA PPU_ADDRESS
         STX PPU_ADDRESS
         RTS
@@ -247,7 +247,7 @@ VRAMADDR
 ; =============== S U B R O U T I N E =======================================
 
 
-PAD_READ
+PAD_READ:
         JSR PAD_STROBE
         LDA JOYPAD1
         STA PAD1_TEST
@@ -263,7 +263,7 @@ PAD_READ
         RTS
 ; ---------------------------------------------------------------------------
 
-PAD_DRE
+PAD_DRE:
         LDA #0
         STA JOYPAD1
         STA JOYPAD2
@@ -273,7 +273,7 @@ PAD_DRE
 ; =============== S U B R O U T I N E =======================================
 
 
-PAD_STROBE
+PAD_STROBE:
         LDA #1
         STA JOYPAD_PORT1
         LDA #0
@@ -306,7 +306,7 @@ JOY2:
 ; =============== S U B R O U T I N E =======================================
 
 
-IS_PRESSED
+IS_PRESSED:
         AND #3
         BEQ NOT_PRESSED
         INX
@@ -318,7 +318,7 @@ NOT_PRESSED:
 ; =============== S U B R O U T I N E =======================================
 
 
-PPU_RESET
+PPU_RESET:
         JSR PPUD
         JSR VBLD
         LDA #$10
@@ -338,14 +338,14 @@ PPU_RESET
 ; =============== S U B R O U T I N E =======================================
 
 
-CLS
+CLS:
         LDA #$20 ; ' '
         LDX #0
         JSR VRAMADDR
         LDY #8
         LDA #$B0 ; '-'
 
-CLEAR_NT
+CLEAR_NT:
         STA PPU_DATA
         DEX
         BNE CLEAR_NT
@@ -367,7 +367,7 @@ CLEAR_AT:
 ; =============== S U B R O U T I N E =======================================
 
 
-PPUE
+PPUE:
         JSR VBLD
         JSR WAITVBL
         LDA #$E
@@ -398,7 +398,7 @@ PPUE
 ; the bomber picture will blink when there are many sprites on the screen).
 
 
-SENDSPR
+SENDSPR:
         LDA #0
         STA PPU_SPR_ADDR
         LDA #7
@@ -409,7 +409,7 @@ SENDSPR
 ; =============== S U B R O U T I N E =======================================
 
 
-PPUD
+PPUD:
         JSR WAITVBL
         LDA #0
 
@@ -438,7 +438,7 @@ SPRE:
 
 ; Hide Sprites
 
-SPRD
+SPRD:
         LDY #$1C
         LDA #248
 
@@ -462,7 +462,7 @@ SETATTR:
 ; =============== S U B R O U T I N E =======================================
 
 
-WAITVBL
+WAITVBL:
         LDA PPU_STATUS
         BMI WAITVBL
 
@@ -475,7 +475,7 @@ WAITVBL2:
 ; =============== S U B R O U T I N E =======================================
 
 
-PPU_RESTORE
+PPU_RESTORE:
         LDA LAST_2001
         STA PPU_CTRL_REG2
         LDA #0
@@ -492,7 +492,7 @@ PPU_RESTORE
 ; =============== S U B R O U T I N E =======================================
 
 
-VBLE
+VBLE:
         JSR WAITVBL
         LDA LAST_2000
         ORA #$80
@@ -502,7 +502,7 @@ VBLE
 ; =============== S U B R O U T I N E =======================================
 
 
-VBLD
+VBLD:
         LDA LAST_2000
         AND #$7F
 
@@ -532,8 +532,8 @@ PAL_RESET_LOOP:
 ; =============== S U B R O U T I N E =======================================
 
 
-VRAMADDRZ
-        LDA #$3F ; '?'
+VRAMADDRZ:
+        LDA #$3F
         STA PPU_ADDRESS
         LDA #0
         STA PPU_ADDRESS
@@ -549,7 +549,7 @@ STARTPAL:   .BYTE $19, $F,$10,$30,$19,$16,$26,$36,$19, $F,$18,$28,$19, $F,$17,  
 
 ; Wait for the button to release
 
-WAITUNPRESS
+WAITUNPRESS:
         LDA JOYPAD1
         BNE WAITUNPRESS ; Wait for the button to release
         RTS
@@ -558,7 +558,7 @@ WAITUNPRESS
 ; =============== S U B R O U T I N E =======================================
 
 
-START                  
+START:           
         LDY #0
         STY TEMP_ADDR
         INY
@@ -584,14 +584,14 @@ CLEAR_WRAM:
         BNE CLEAR_ZP
         LDX #8
 
-CLEAR_ZP
+CLEAR_ZP:
         STA 0,X
         INX
         BNE CLEAR_ZP
         LDA #$93
         STA SOFT_RESET_FLAG
 
-RESET_GAME
+RESET_GAME:
         JSR PPU_RESET
         LDA #0
         STA SPR_TAB_TOGGLE
@@ -672,7 +672,7 @@ loc_C3B6:
         LDX #6
         LDA #0
 
-CLEAR_SCORE_LOOP:           
+CLEAR_SCORE_LOOP:
         STA SCORE,X
         DEX
         BPL CLEAR_SCORE_LOOP
@@ -3034,7 +3034,8 @@ loc_D242:
         RTS
 
 ; ---------------------------------------------------------------------------
-THINK_PROC: .WORD $D320     ; Pink bulb
+THINK_PROC:
+        .WORD $D320     ; Pink bulb
         .WORD $D2E7     ; Blue Pepper
         .WORD $D2C8     ; Barrel
         .WORD $D305     ; Kolobok
@@ -5962,16 +5963,16 @@ WAVELEN_TAB:
         .WORD   $1E,  $1C,  $1B,  $1A                                                       ; Octave 8
 
 APU_MELODIES_TAB:
-        .WORD $EB17,$EB85,$EBEA,$8080 ; 1: TITLE
-        .WORD $ECBC,$ECDC,$ECFC,$4040 ; 2: STAGE_SCREEN
-        .WORD     0,    0,$ED9C,$8080 ; 3: STAGE
-        .WORD $ED4D,$ED7B,$ED18,$8080 ; 4: STAGE2
-        .WORD $EC50,$EC7E,$ECAC,$8080 ; 5: GODMODE
-        .WORD $EA27,$EA63,$EA9F,$8080 ; 6: BONUS
-        .WORD $E8CC,$E91C,$E970,  $40 ; 7: FANFARE
-        .WORD $EAE1,$EAFF,    0,$8080 ; 8: DIED
-        .WORD $E9A2,$E9D5,$E9FF,$8080 ; 9: GAMEOVER
-        .WORD $E903,$E957,$E988,  $40 ; 10: ???
+        .WORD TUNE1_TRI,    TUNE1_SQ2,    TUNE1_SQ1,  $8080 ; 1: TITLE
+        .WORD TUNE2_TRI,    TUNE2_SQ2,    TUNE2_SQ1,  $4040 ; 2: STAGE_SCREEN
+        .WORD         0,            0,    TUNE3_SQ1,  $8080 ; 3: STAGE
+        .WORD TUNE4_TRI,    TUNE4_SQ2,    TUNE4_SQ1,  $8080 ; 4: STAGE2
+        .WORD TUNE5_TRI,    TUNE5_SQ2,    TUNE5_SQ1,  $8080 ; 5: GODMODE
+        .WORD TUNE6_TRI,    TUNE6_SQ2,    TUNE6_SQ1,  $8080 ; 6: BONUS
+        .WORD TUNE7_TRI,    TUNE7_SQ2,    TUNE7_SQ1,  $0040 ; 7: FANFARE
+        .WORD TUNE8_TRI,    TUNE8_SQ2,            0,  $8080 ; 8: DIED
+        .WORD TUNE9_TRI,    TUNE9_SQ2,    TUNE9_SQ1,  $8080 ; 9: GAMEOVER
+        .WORD TUNE7_TRI+55, TUNE7_SQ2+59, TUNE10_SQ1, $0040 ; 10: ??? (not used music)
 
 TUNE7_TRI:  .BYTE $B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C,$2E,$F8,$98
         .BYTE $2D,$86,$2D,$2E,$8C,$2D,$C8,$2B,$86,$32,$33,$8C,$32,$B0,$30,$8C
@@ -6065,6 +6066,7 @@ TUNE3_SQ1:  .BYTE $87,$27,$27,$33,$27,$F9,$8E,$2A,$F8,$87,$2E,$30,$F9,$8E,$31,$3
         .BYTE $22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8,$22,  0,$87
         .BYTE $22,$22,$2E,$22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8
         .BYTE $87,$22,$22,$24,$26,$FE
+
 DEMO_KEYDATA:   .BYTE $3D,  1,  3,$81,  3,$80,$1B,  4,  6,$84,$1B,  4,  2,  5,$34,  1,  8,$41,$13,  1
         .BYTE   1,  0,  6,  1,  1,  0, $F,  1,  1,  0,  3,  1,  1,  0,$11,  1,  6,$81,$1B,  1
         .BYTE   3,$81, $E,  1,$1A,  0,$11,  1,  5,$81,$16,  1,  2,  0,  1,  1,$11,  4,$10,  0
@@ -6106,6 +6108,5 @@ IRQ:
         .WORD NMI
         .WORD RESET
         .WORD IRQ
-; end of 'ROM'
 
         .END
