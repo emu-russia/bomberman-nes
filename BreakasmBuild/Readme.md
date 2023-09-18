@@ -2,6 +2,8 @@
 
 Build using the Breakasm assembler.
 
+Ignore that folder, it's for org only :-)
+
 ## Текущие проблемы
 
 ### Проблема
