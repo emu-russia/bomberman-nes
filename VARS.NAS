@@ -6,8 +6,8 @@ SOFT_RESET_FLAG     EQU $08
 CLEAR_TOPSCORE1     EQU $09 
 CLEAR_TOPSCORE2     EQU $0A 
 FRAMEDONE           EQU $0B 
-LAST_2000           EQU $0C 
-LAST_2001           EQU $0D 
+LAST_2000           EQU $0C  		; The PPU_CTRL1 register is write-only, so its shadow copy in RAM is used (common practice)
+LAST_2001           EQU $0D 		; The PPU_CTRL2 register is write-only, so its shadow copy in RAM is used
 H_SCROLL            EQU $0E 
 V_SCROLL            EQU $0F 
 PAD1_TEST           EQU $10 
@@ -32,7 +32,7 @@ byte_22             EQU $22
 byte_23             EQU $23 
 TEMP_X              EQU $24 
 TEMP_Y              EQU $25 
-word_26             EQU $26 
+OAM_PTR             EQU $26 		; Pointer to cache of OAM data
 BOMBMAN_X           EQU $28 
 BOMBMAN_U           EQU $29 
 BOMBMAN_Y           EQU $2A 
@@ -80,13 +80,12 @@ STAGE               EQU $58
 DEMOPLAY            EQU $59 
 byte_5A             EQU $5A 
 EXIT_ENEMY_TYPE     EQU $5B 
-byte_5C             EQU $5C 
-byte_5D             EQU $5D 
-byte_5E             EQU $5E 
+DYING               EQU $5C 		; Boolean, in the process of dying 
+KILLED              EQU $5D 		; Boolean, have we lost a life on this level 
+NO_ENEMIES_LEFT     EQU $5E  		; Boolean, when no enemies remain
 CURSOR              EQU $5F 
 STAGE_STARTED       EQU $60 
 SCORE               EQU $61 
-unk_64              EQU $64 
 LIFELEFT            EQU $68 
 FPS                 EQU $69 
 IS_SECOND_PASSED    EQU $6A 
@@ -101,16 +100,11 @@ BONUS_NOCLIP        EQU $76
 BONUS_REMOTE        EQU $77 
 BONUS_BOMBWALK      EQU $78 
 BONUS_FIRESUIT      EQU $79 
-INVUL_UNK1          EQU $7A 
+INVULNERABLE_TIMER  EQU $7A 		; Invulnerability to monsters for a short time 
 LAST_INPUT          EQU $7B 
-INVUL_UNK2          EQU $7D
+INVULNERABLE        EQU $7D 		; Invulnerable to monsters for this stage (Boolean)
 BONUS_ENEMY_TYPE    EQU $7E 
-unk_7F              EQU $7F 
-unk_80              EQU $80 
-byte_83             EQU $83 
-byte_87             EQU $87 
-byte_88             EQU $88 
-byte_8D             EQU $8D 
+PW_BUFF             EQU $7F			; Password is stored here (20 bytes) .. $92 
 byte_92             EQU $92 
 TIMELEFT            EQU $93 
 DEBUG_MODE          EQU $94 		; render hidden tiles (doors and powerups) as red half-destroyed walls
@@ -175,9 +169,9 @@ byte_D8             EQU $D8
 byte_D9             EQU $D9 
 byte_DA             EQU $DA 
 SPR_TAB_TOGGLE      EQU $DB 
-byte_DC             EQU $DC 
-byte_DD             EQU $DD 
-byte_DE             EQU $DE 
+BOMB_PWR            EQU $DC  		; Used for BONUS_POWER calculations with resume codes
+STAGE_LO            EQU $DD  		; Used for low byte of STAGE in resume codes
+STAGE_HI            EQU $DE  		; Used for high byte of STAGE in resume codes
 APU_SOUND           EQU $DF 
 APU_PATTERN         EQU $E0 
 TEMP_ADDR           EQU $E0 
