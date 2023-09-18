@@ -5946,16 +5946,23 @@ S6_PITCH:
         STA APU_PATTERN
         RTS
 ; ---------------------------------------------------------------------------
-S6_SQ1MOD_TAB:  .BYTE $A9       
-        .BYTE $A0
-S6_SQ2MOD_TAB:  .BYTE $6A       
-        .BYTE $64
-WAVELEN_TAB:    .WORD     0, $7F0, $77E, $712, $6AE, $64E, $5F3, $59F, $54D, $501, $4B9, $475, $435, $3F8, $3BF, $389
-        .WORD  $357, $327, $2F9, $2CF, $2A6, $280, $25C, $23A, $21A, $1FC, $1DF, $1C4, $1AB, $193, $17C, $167
-        .WORD  $152, $13F, $12D, $11C, $10C,  $FD,  $EE,  $E1,  $D4,  $C8,  $BD,  $B2,  $A8,  $9F,  $96,  $8D
-        .WORD   $85,  $7E,  $76,  $70,  $69,  $63,  $5E,  $58,  $53,  $4F,  $4A,  $46,  $42,  $3E,  $3A,  $37
-        .WORD   $34,  $31,  $2E,  $2B,  $29,  $27,  $24,  $22,  $20,  $1E,  $1C,  $1B,  $1A
-APU_MELODIES_TAB:.WORD $EB17,$EB85,$EBEA,$8080 ; 1: TITLE
+S6_SQ1MOD_TAB: .BYTE $A9, $A0
+S6_SQ2MOD_TAB: .BYTE $6A, $64
+
+; Wavelength for square wave notes on an NTSC system (triangle wave are one octave lower)
+WAVELEN_TAB:
+        .WORD     0     ; Silence
+        ;       A    Bb     B     C    C#     D    D#     E     F    F#     G    G#     Scientific designation
+        .WORD  $7F0, $77E, $712, $6AE, $64E, $5F3, $59F, $54D, $501, $4B9, $475, $435       ; Octave 2
+        .WORD  $3F8, $3BF, $389, $357, $327, $2F9, $2CF, $2A6, $280, $25C, $23A, $21A       ; Octave 3
+        .WORD  $1FC, $1DF, $1C4, $1AB, $193, $17C, $167, $152, $13F, $12D, $11C, $10C       ; Octave 4 (With middle C)
+        .WORD   $FD,  $EE,  $E1,  $D4,  $C8,  $BD,  $B2,  $A8,  $9F,  $96,  $8D,  $85       ; Octave 5
+        .WORD   $7E,  $76,  $70,  $69,  $63,  $5E,  $58,  $53,  $4F,  $4A,  $46,  $42       ; Octave 6
+        .WORD   $3E,  $3A,  $37,  $34,  $31,  $2E,  $2B,  $29,  $27,  $24,  $22,  $20       ; Octave 7
+        .WORD   $1E,  $1C,  $1B,  $1A                                                       ; Octave 8
+
+APU_MELODIES_TAB:
+        .WORD $EB17,$EB85,$EBEA,$8080 ; 1: TITLE
         .WORD $ECBC,$ECDC,$ECFC,$4040 ; 2: STAGE_SCREEN
         .WORD     0,    0,$ED9C,$8080 ; 3: STAGE
         .WORD $ED4D,$ED7B,$ED18,$8080 ; 4: STAGE2
@@ -5965,6 +5972,7 @@ APU_MELODIES_TAB:.WORD $EB17,$EB85,$EBEA,$8080 ; 1: TITLE
         .WORD $EAE1,$EAFF,    0,$8080 ; 8: DIED
         .WORD $E9A2,$E9D5,$E9FF,$8080 ; 9: GAMEOVER
         .WORD $E903,$E957,$E988,  $40 ; 10: ???
+
 TUNE7_TRI:  .BYTE $B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C,$2E,$F8,$98
         .BYTE $2D,$86,$2D,$2E,$8C,$2D,$C8,$2B,$86,$32,$33,$8C,$32,$B0,$30,$8C
         .BYTE   0,$26,$28,$B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C
