@@ -1,6 +1,6 @@
 ; Digitization of the bomb blast.
 
-BOOM_SAMPLE
+BOOM_SAMPLE:
     BYTE    $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FC, $00, $00, $1F, $F0, $00, $1F 
     BYTE    $FE, $00, $00, $07, $FF, $FF, $FF, $30, $00, $00, $3F, $FF, $E0, $07, $F0, $3F 
     BYTE    $F8, $1F, $F0, $1F, $FF, $FF, $C0, $00, $03, $FF, $C0, $FF, $FF, $C0, $7F, $C7 
