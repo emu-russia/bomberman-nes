@@ -1,5 +1,7 @@
 DEL BOMBER.NES
-DASM BMAN.NAS -f3 -oBOMBER.PRG -lBOMBER.LST
-COPY /B NES_Header.bin + BOMBER.PRG + BOMBER.CHR /B BOMBER.NES
-python crc32.py BOMBER.PRG
+del *.prg
+python breakasm.py BMAN.NAS BOMBER.PRG > out.txt
+python split.py BOMBER.PRG
+COPY /B NES_Header.bin + BOMBER003.PRG + BOMBER.CHR /B BOMBER.NES
+python crc32.py BOMBER003.PRG
 python crc32.py BOMBER.CHR

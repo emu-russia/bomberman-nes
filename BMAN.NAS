@@ -15,11 +15,11 @@ RESET:
         LDX #$FF                        ; Set the stack pointer to the initial position
         TXS
 
-WAIT_VBLANK1                            ; Wait for 2 VBlank's, to stabilize the PPU.
+WAIT_VBLANK1:                            ; Wait for 2 VBlank's, to stabilize the PPU.
         LDA PPU_STATUS
         BPL WAIT_VBLANK1
 
-WAIT_VBLANK2
+WAIT_VBLANK2:
         LDA PPU_STATUS
         BPL WAIT_VBLANK2
         JMP START
@@ -542,8 +542,8 @@ VRAMADDRZ:
         RTS
 
 ; ---------------------------------------------------------------------------
-STARTPAL:   .BYTE $19, $F,$10,$30,$19,$16,$26,$36,$19, $F,$18,$28,$19, $F,$17,  7
-        .BYTE $19,$30,$21,$26,$19, $F,$26,$30,$19, $F,$15,$30,$19, $F,$21,$30
+STARTPAL:   BYTE $19, $F,$10,$30,$19,$16,$26,$36,$19, $F,$18,$28,$19, $F,$17,  7
+        BYTE $19,$30,$21,$26,$19, $F,$26,$30,$19, $F,$15,$30,$19, $F,$21,$30
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -1243,15 +1243,15 @@ locret_C75C:
         RTS
 
 ; ---------------------------------------------------------------------------
-byte_C75D:  .BYTE $27,  3,  4,  5,  6,  7,  0 
-byte_C764:  .BYTE   0, $B, $C, $D, $E, $D, $C, $B 
-        .BYTE   0, $F,$10,$11,$12,$13,$14,$15
-        .BYTE $16,$13,$14,$11
-byte_C778:  .BYTE $12, $F,$10,  0,  0,$17,$18,$19 
-        .BYTE $1A,$1B,$1C,$1D,$1E,$1F,$20,$21
-        .BYTE $22,$23,$24,$25,$26,$1F,$20,$21
-        .BYTE $22,$1B,$1C,$1D,$1E,$17,$18,$19
-        .BYTE $1A,  0,  0,  0,  0
+byte_C75D:  BYTE $27,  3,  4,  5,  6,  7,  0 
+byte_C764:  BYTE   0, $B, $C, $D, $E, $D, $C, $B 
+        BYTE   0, $F,$10,$11,$12,$13,$14,$15
+        BYTE $16,$13,$14,$11
+byte_C778:  BYTE $12, $F,$10,  0,  0,$17,$18,$19 
+        BYTE $1A,$1B,$1C,$1D,$1E,$1F,$20,$21
+        BYTE $22,$23,$24,$25,$26,$1F,$20,$21
+        BYTE $22,$1B,$1C,$1D,$1E,$17,$18,$19
+        BYTE $1A,  0,  0,  0,  0
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -1612,7 +1612,7 @@ sub_C9B6:
         RTS
 
 ; ---------------------------------------------------------------------------
-byte_C9DE:  .BYTE $FF,  3,  4,  1,  2 
+byte_C9DE:  BYTE $FF,  3,  4,  1,  2 
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -1643,8 +1643,8 @@ locret_CA10:
         RTS
 
 ; ---------------------------------------------------------------------------
-byte_CA11:  .BYTE   0,  0,$FF,  0,  1 
-byte_CA16:  .BYTE   0,  1,  0,$FF,  0 
+byte_CA11:  BYTE   0,  0,$FF,  0,  1 
+byte_CA16:  BYTE   0,  1,  0,$FF,  0 
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -1679,7 +1679,7 @@ BOMB_ANIM_NEXT:
         RTS
 
 ; ---------------------------------------------------------------------------
-BOMB_ANIM:  .BYTE   9, $A,  9,  8   
+BOMB_ANIM:  BYTE   9, $A,  9,  8   
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -2009,11 +2009,11 @@ locret_CC03:
         RTS
 
 ; ---------------------------------------------------------------------------
-EXIT_ENEMY_TAB: .BYTE   2,  1,  5,  3,  1,  1,  2,  5,  6,  4 ; This table contains the type of monster that comes out of the door after an explosion
-        .BYTE   1,  1,  5,  6,  2,  4,  1,  6,  1,  5 
-        .BYTE   6,  5,  1,  5,  6,  8,  2,  1,  5,  7
-        .BYTE   4,  1,  5,  8,  6,  7,  5,  2,  4,  8
-        .BYTE   5,  4,  6,  5,  8,  4,  6,  5,  7,  8
+EXIT_ENEMY_TAB: BYTE   2,  1,  5,  3,  1,  1,  2,  5,  6,  4 ; This table contains the type of monster that comes out of the door after an explosion
+        BYTE   1,  1,  5,  6,  2,  4,  1,  6,  1,  5 
+        BYTE   6,  5,  1,  5,  6,  8,  2,  1,  5,  7
+        BYTE   4,  1,  5,  8,  6,  7,  5,  2,  4,  8
+        BYTE   5,  4,  6,  5,  8,  4,  6,  5,  7,  8
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -2327,7 +2327,7 @@ loc_CE06:
         JMP loc_CE2E
 
 ; ---------------------------------------------------------------------------
-        .BYTE $60 ; `
+        BYTE $60 ; `
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -2505,9 +2505,9 @@ sub_CEA7:
         JMP SPR_DRAW    ; Update the sprite (the A register is the sequential number of the 16x16 sprite image)
 
 ; ---------------------------------------------------------------------------
-byte_CED2:  .BYTE $10,$11,$12,$11   
-BOMBER_ANIM:    .BYTE   0,  1,  2,  1,  3,  4,  5,  4,  6,  7,  8,  7,  9, 10, 11, 12
-        .BYTE  13, 14, 15
+byte_CED2:  BYTE $10,$11,$12,$11   
+BOMBER_ANIM:    BYTE   0,  1,  2,  1,  3,  4,  5,  4,  6,  7,  8,  7,  9, 10, 11, 12
+        BYTE  13, 14, 15
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR sub_CC36
 
@@ -2940,31 +2940,31 @@ locret_D123:
         RTS
 
 ; ---------------------------------------------------------------------------
-        .BYTE $EC,$46,  0
-        .BYTE $ED,$46,  0
-        .BYTE $EE,$46,  0
-        .BYTE $EF,$46,  0
-        .BYTE $FC,$46,  0
-        .BYTE $FD,$46,  0
-        .BYTE $FE,$46,  0
-        .BYTE $FF,$46,  0
-        .BYTE $EC,$46,$46
-        .BYTE $ED,$46,$46
-        .BYTE $EE,$46,$46
-        .BYTE $EF,$46,$46
-        .BYTE $FC,$46,$46
-        .BYTE $FD,$46,$46
-        .BYTE $FE,$46,$46
-        .BYTE $FF,$46,$46
-MONSTER_TILE:   .BYTE $18,$19,$1A,$19,$1C,$1D,$1E,$1D,$20,$21,$22,$21,$24,$25,$26,$25
-        .BYTE $28,$29,$2A,$29,$2C,$2D,$2E,$2D,$30,$31,$32,$31,$34,$35,$36,$35
-        .BYTE $1B,$1F,$23,$27,$2B,$2F,$33,$37,$14,$15,$16,$17,$38,$39,$3A,$3B
-        .BYTE $3C,$3D
-MONSTER_ATTR:   .BYTE   1,  1,  1,  1,  3,  3,  3,  3,  2,  2,  2,  2,  1,  1,  1,  1
-        .BYTE   3,  3,  3,  3,  2,  2,  2,  2,  1,  1,  1,  1,  1,  2,  1,  2
-        .BYTE   1,  3,  2,  1,  3,  2,  1,  1,  1,  1,  1,  1,  1,  0,  1,  2
-        .BYTE   3,  1,  1,  2,  4,  8, $A,$14,$28,$50,$64,$C8,  2,  4,  5, $A
-        .BYTE $14,$28
+        BYTE $EC,$46,  0
+        BYTE $ED,$46,  0
+        BYTE $EE,$46,  0
+        BYTE $EF,$46,  0
+        BYTE $FC,$46,  0
+        BYTE $FD,$46,  0
+        BYTE $FE,$46,  0
+        BYTE $FF,$46,  0
+        BYTE $EC,$46,$46
+        BYTE $ED,$46,$46
+        BYTE $EE,$46,$46
+        BYTE $EF,$46,$46
+        BYTE $FC,$46,$46
+        BYTE $FD,$46,$46
+        BYTE $FE,$46,$46
+        BYTE $FF,$46,$46
+MONSTER_TILE:   BYTE $18,$19,$1A,$19,$1C,$1D,$1E,$1D,$20,$21,$22,$21,$24,$25,$26,$25
+        BYTE $28,$29,$2A,$29,$2C,$2D,$2E,$2D,$30,$31,$32,$31,$34,$35,$36,$35
+        BYTE $1B,$1F,$23,$27,$2B,$2F,$33,$37,$14,$15,$16,$17,$38,$39,$3A,$3B
+        BYTE $3C,$3D
+MONSTER_ATTR:   BYTE   1,  1,  1,  1,  3,  3,  3,  3,  2,  2,  2,  2,  1,  1,  1,  1
+        BYTE   3,  3,  3,  3,  2,  2,  2,  2,  1,  1,  1,  1,  1,  2,  1,  2
+        BYTE   1,  3,  2,  1,  3,  2,  1,  1,  1,  1,  1,  1,  1,  0,  1,  2
+        BYTE   3,  1,  1,  2,  4,  8, $A,$14,$28,$50,$64,$C8,  2,  4,  5, $A
+        BYTE $14,$28
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -3035,17 +3035,17 @@ loc_D242:
 
 ; ---------------------------------------------------------------------------
 THINK_PROC:
-        .WORD $D320     ; Pink bulb
-        .WORD $D2E7     ; Blue Pepper
-        .WORD $D2C8     ; Barrel
-        .WORD $D305     ; Kolobok
-        .WORD $D2B4     ; Cloud
-        .WORD $D319     ; Medusa
-        .WORD $D3A0     ; Boar
-        .WORD $D38A     ; Coin
-        .WORD $D2A2
-        .WORD $D264
-        .WORD $D25B
+        WORD $D320     ; Pink bulb
+        WORD $D2E7     ; Blue Pepper
+        WORD $D2C8     ; Barrel
+        WORD $D305     ; Kolobok
+        WORD $D2B4     ; Cloud
+        WORD $D319     ; Medusa
+        WORD $D3A0     ; Boar
+        WORD $D38A     ; Coin
+        WORD $D2A2
+        WORD $D264
+        WORD $D25B
 ; ---------------------------------------------------------------------------
         DEC byte_49
         BNE locret_D2A2
@@ -3344,8 +3344,8 @@ loc_D406:
         STA M_FACE
         RTS
 ; ---------------------------------------------------------------------------
-byte_D412:  .BYTE   0,  3,  4,  1,  2,  1,  4,  4,  2,  1,  3,  2,  4
-        .BYTE   3,  1,  0,  1,  2,  4,  8
+byte_D412:  BYTE   0,  3,  4,  1,  2,  1,  4,  4,  2,  1,  3,  2,  4
+        BYTE   3,  1,  0,  1,  2,  4,  8
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -3926,7 +3926,7 @@ loc_D703:
 ; Monster population table for each of the 50 levels.
 ; The map can be a maximum of 10 monsters.
 
-MONSTER_TAB
+MONSTER_TAB:
     BYTE    1, 1, 1, 1, 1, 1, 0, 0, 0, 0
     BYTE    1, 1, 1, 2, 2, 2, 0, 0, 0, 0 
     BYTE    1, 1, 2, 2, 3, 3, 0, 0, 0, 0 
@@ -4093,106 +4093,106 @@ locret_D993:
         RTS
 
 ; ---------------------------------------------------------------------------
-unk_D994:   .BYTE   0       
-        .BYTE   0
-        .BYTE   0
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   0
-        .BYTE   0
-        .BYTE   0
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   1
-        .BYTE   3
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   2
-        .BYTE   3
-TILE_MAP:   .BYTE $5F,$5F,$5F,$5F   
-        .BYTE $64,$65,$66,$67
-        .BYTE $68,$69,$6A,$6B
-        .BYTE $6C,$6D,$6E,$6F
-        .BYTE $70,$71,$72,$73
-        .BYTE $74,$75,$76,$77
-        .BYTE $78,$79,$7A,$7B
-        .BYTE $7C,$7D,$7E,$7F
-        .BYTE $80,$81,$82,$83
-        .BYTE $84,$85,$86,$87
-        .BYTE $88,$89,$8A,$8B
-        .BYTE $8C,$8D,$8E,$8F
-        .BYTE $90,$91,$92,$93
-        .BYTE $94,$95,$96,$97
-        .BYTE $98,$99,$9A,$9B
-        .BYTE $20,$20,$21,$21
-        .BYTE $22,$23,$22,$23
-        .BYTE $24,$24,$25,$25
-        .BYTE $26,$27,$26,$27
-        .BYTE $28,$28,$29,$29
-        .BYTE $2A,$2B,$2A,$2B
-        .BYTE $2C,$2C,$2D,$2D
-        .BYTE $2E,$2F,$2E,$2F
-        .BYTE $20,$9D,$21,$9F
-        .BYTE $9C,$9D,$22,$23
-        .BYTE $9C,$20,$9E,$21
-        .BYTE $22,$23,$9E,$9F
-        .BYTE $24,$A1,$25,$A3
-        .BYTE $A0,$A1,$26,$27
-        .BYTE $A0,$24,$A2,$25
-        .BYTE $26,$27,$A2,$A3
-        .BYTE $28,$A5,$29,$A7
-        .BYTE $A4,$A5,$2A,$2B
-        .BYTE $A4,$28,$A6,$29
-        .BYTE $2A,$2B,$A6,$A7
-        .BYTE $2C,$A9,$2D,$AB
-        .BYTE $A8,$A9,$2E,$2F
-        .BYTE $A8,$2C,$AA,$2D
-        .BYTE $2E,$2F,$AA,$AB
-        .BYTE $68,$69,$6A,$6B
-        .BYTE $3C,$3D,$3E,$3F
-        .BYTE   0,  1,$10,$11
-        .BYTE   2,  3,$12,$13
-        .BYTE   4,  5,$14,$15
-        .BYTE   6,  7,$16,$17
-        .BYTE   8,  9,$18,$19
-        .BYTE  $A, $B,$1A,$1B
-        .BYTE  $C, $D,$1C,$1D
-        .BYTE  $E, $F,$1E,$1F
-        .BYTE $68,$69,$6A,$6B
+unk_D994:   BYTE   0       
+        BYTE   0
+        BYTE   0
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   0
+        BYTE   0
+        BYTE   0
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   1
+        BYTE   3
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   2
+        BYTE   3
+TILE_MAP:   BYTE $5F,$5F,$5F,$5F   
+        BYTE $64,$65,$66,$67
+        BYTE $68,$69,$6A,$6B
+        BYTE $6C,$6D,$6E,$6F
+        BYTE $70,$71,$72,$73
+        BYTE $74,$75,$76,$77
+        BYTE $78,$79,$7A,$7B
+        BYTE $7C,$7D,$7E,$7F
+        BYTE $80,$81,$82,$83
+        BYTE $84,$85,$86,$87
+        BYTE $88,$89,$8A,$8B
+        BYTE $8C,$8D,$8E,$8F
+        BYTE $90,$91,$92,$93
+        BYTE $94,$95,$96,$97
+        BYTE $98,$99,$9A,$9B
+        BYTE $20,$20,$21,$21
+        BYTE $22,$23,$22,$23
+        BYTE $24,$24,$25,$25
+        BYTE $26,$27,$26,$27
+        BYTE $28,$28,$29,$29
+        BYTE $2A,$2B,$2A,$2B
+        BYTE $2C,$2C,$2D,$2D
+        BYTE $2E,$2F,$2E,$2F
+        BYTE $20,$9D,$21,$9F
+        BYTE $9C,$9D,$22,$23
+        BYTE $9C,$20,$9E,$21
+        BYTE $22,$23,$9E,$9F
+        BYTE $24,$A1,$25,$A3
+        BYTE $A0,$A1,$26,$27
+        BYTE $A0,$24,$A2,$25
+        BYTE $26,$27,$A2,$A3
+        BYTE $28,$A5,$29,$A7
+        BYTE $A4,$A5,$2A,$2B
+        BYTE $A4,$28,$A6,$29
+        BYTE $2A,$2B,$A6,$A7
+        BYTE $2C,$A9,$2D,$AB
+        BYTE $A8,$A9,$2E,$2F
+        BYTE $A8,$2C,$AA,$2D
+        BYTE $2E,$2F,$AA,$AB
+        BYTE $68,$69,$6A,$6B
+        BYTE $3C,$3D,$3E,$3F
+        BYTE   0,  1,$10,$11
+        BYTE   2,  3,$12,$13
+        BYTE   4,  5,$14,$15
+        BYTE   6,  7,$16,$17
+        BYTE   8,  9,$18,$19
+        BYTE  $A, $B,$1A,$1B
+        BYTE  $C, $D,$1C,$1D
+        BYTE  $E, $F,$1E,$1F
+        BYTE $68,$69,$6A,$6B
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4318,6 +4318,7 @@ loc_DB43:
         AND #$F
         TAX
         LDA byte_DFA0,X
+abs                             ;; Next instruction uses absolute addressing
         STA $7F,Y
         JSR WAITVBL
         LDA #$22 ; '"'
@@ -4405,6 +4406,7 @@ loc_DBCF:
 
 loc_DBD3:               
         JSR _get_pass_data_var_addr
+abs                             ;; Next instruction uses absolute addressing
         LDA PW_BUFF,Y
         STY TEMP_Y
         LDY #0
@@ -4488,39 +4490,39 @@ locret_DC52:
         RTS
 
 ; ---------------------------------------------------------------------------
-unk_DC53:   .BYTE $20       
-        .BYTE $88
-        .BYTE "CONGRATULATIONS"
-        .BYTE   0
-        .BYTE $20
-        .BYTE $E4
-        .BYTE "YOU:HAVE:SUCCEED"
-        .BYTE "ED:IN"
-        .BYTE   0
-        .BYTE $21
-        .BYTE $22
-        .BYTE "HELPING:BOMBERMAN:TO:BECOME"
-        .BYTE   0
-        .BYTE $21
-        .BYTE $62
-        .BYTE "A:HUMAN:BEING"
-        .BYTE   0
-        .BYTE $21
-        .BYTE $A4
-        .BYTE "MAYBE:YOU:CAN:RE"
-        .BYTE "COGNIZE:HIM"
-        .BYTE   0
-        .BYTE $21
-        .BYTE $E2
-        .BYTE "IN:ANOTHER:HUDSO"
-        .BYTE "N:SOFT:GAME"
-        .BYTE   0
-        .BYTE $22
-        .BYTE $4B
-        .BYTE "GOOD:BYE"
-        .BYTE   0
-        .BYTE "ENTER:SECRET:CODE"
-        .BYTE   0
+unk_DC53:   BYTE $20       
+        BYTE $88
+        BYTE "CONGRATULATIONS"
+        BYTE   0
+        BYTE $20
+        BYTE $E4
+        BYTE "YOU:HAVE:SUCCEED"
+        BYTE "ED:IN"
+        BYTE   0
+        BYTE $21
+        BYTE $22
+        BYTE "HELPING:BOMBERMAN:TO:BECOME"
+        BYTE   0
+        BYTE $21
+        BYTE $62
+        BYTE "A:HUMAN:BEING"
+        BYTE   0
+        BYTE $21
+        BYTE $A4
+        BYTE "MAYBE:YOU:CAN:RE"
+        BYTE "COGNIZE:HIM"
+        BYTE   0
+        BYTE $21
+        BYTE $E2
+        BYTE "IN:ANOTHER:HUDSO"
+        BYTE "N:SOFT:GAME"
+        BYTE   0
+        BYTE $22
+        BYTE $4B
+        BYTE "GOOD:BYE"
+        BYTE   0
+        BYTE "ENTER:SECRET:CODE"
+        BYTE   0
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4546,8 +4548,8 @@ loc_DD15:
         JMP VRAMADDRZ
 
 ; ---------------------------------------------------------------------------
-byte_DD22:  .BYTE  $F,  0,  0,  0, $F,  0,  0,  0, $F,  0,  0,  0, $F,  0,  0,  0
-        .BYTE  $F,  0,  0,  0, $F,  0,  0,  0, $F,$15,$36,$21
+byte_DD22:  BYTE  $F,  0,  0,  0, $F,  0,  0,  0, $F,  0,  0,  0, $F,  0,  0,  0
+        BYTE  $F,  0,  0,  0, $F,  0,  0,  0, $F,$15,$36,$21
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4571,7 +4573,7 @@ loc_DD50:
         JMP PPUE
 
 ; ---------------------------------------------------------------------------
-aRevoEmag:  .BYTE "REVO:EMAG"       
+aRevoEmag:  BYTE "REVO:EMAG"       
 ; ---------------------------------------------------------------------------
 
 loc_DD6B:               
@@ -4701,8 +4703,8 @@ loc_DE07:
         JMP PUTNUMBER   ; Print a two-digit number given in the A register.
 
 ; ---------------------------------------------------------------------------
-aEmit:      .BYTE "EMIT"            
-aTfel:      .BYTE "TFEL"            
+aEmit:      BYTE "EMIT"            
+aTfel:      BYTE "TFEL"            
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4732,7 +4734,7 @@ PUT_STAGE_STR:
         JMP PPUE
 
 ; ---------------------------------------------------------------------------
-aEgats:     .BYTE "EGATS"           
+aEgats:     BYTE "EGATS"           
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4757,7 +4759,7 @@ PUT_BONUS_MSG:
         JMP PPUE
 
 ; ---------------------------------------------------------------------------
-aEgatsSunob:    .BYTE "EGATS:SUNOB"     
+aEgatsSunob:    BYTE "EGATS:SUNOB"     
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4948,59 +4950,59 @@ loc_DF83:
         RTS
 
 ; ---------------------------------------------------------------------------
-STAGEPAL:   .BYTE  $F,  0, $F,$30   
-MENUPAL:    .BYTE  $F,  5,$30,$28, $F,  0, $F,$30 
-        .BYTE  $F,  6,$26,$37, $F, $F, $F, $F
-byte_DFA0:  .BYTE   5,  0,  9,  4, $D,  7,  2,  6 
-        .BYTE  $A, $F, $C,  3,  8, $B, $E,  1
-MAINMENU_HI:    .BYTE $B0,$B0,$DF,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C1,$C2,$C0,$B6,$E9,$B8
-        .BYTE $C2,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C2,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$C1,$D9,$D3,$B3,$C1,$D9,$CB,$D3,$B3,$C1,$C5,$C6,$C1
-        .BYTE $B3,$C1,$D9,$D3,$B3,$C1,$D9,$CB,$CB,$C1,$D9,$D3,$B3,$EE,$F8,$B0
-        .BYTE $B0,$B0,$DF,$C1,$D0,$D1,$D2,$C1,$CF,$E9,$C4,$B3,$C1,$D5,$D6,$D7
-        .BYTE $B3,$C1,$D0,$D1,$D2,$C1,$D0,$DC,$E9,$C1,$D0,$D1,$D2,$EB,$F8,$B0
-        .BYTE $B0,$B0,$DF,$C1,$E0,$E1,$E2,$C1,$CF,$E9,$C4,$B3,$C1,$B7,$E6,$E7
-        .BYTE $B3,$C1,$E0,$E1,$E2,$C1,$E0,$F5,$EC,$C1,$E0,$E1,$E2,$EF,$F8,$B0
-        .BYTE $B0,$B0,$DF,$C1,$E8,$DA,$B3,$C1,$CF,$E9,$C4,$B3,$C1,$CF,$E5,$F0
-        .BYTE $B3,$C1,$E8,$DA,$B3,$C1,$E8,$DB,$ED,$C1,$E8,$DA,$B3,$EB,$F8,$B0
-        .BYTE $B0,$B0,$DF,$C1,$B5,$E3,$B3,$C1,$B5,$E9,$E3,$B3,$C1,$CF,$E9,$C4
-        .BYTE $B3,$C1,$B5,$E3,$B3,$C1,$B5,$E9,$E9,$C1,$CF,$C4,$B3,$EB,$F8,$B0
-        .BYTE $B0,$B0,$DF,$B1,$C1,$F1,$C3,$C7,$C1,$C1,$F1,$C3,$B4,$CF,$E9,$B2
-        .BYTE $C3,$C7,$C1,$F1,$C3,$C7,$C1,$C1,$C3,$B4,$CF,$B2,$C3,$EB,$F8,$B0
-        .BYTE $B0,$B0,$DF,$CA,$CB,$CB,$CB,$CE,$CB,$CB,$CB,$CB,$CE,$D8,$E9,$E9
-        .BYTE $EA,$CE,$CB,$CB,$CB,$CE,$CB,$CB,$CB,$CE,$D8,$E9,$EA,$CD,$F8,$B0
-MAINMENU_LO:    .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C0,$B6,$E9,$B8,$C2,$C0
-        .BYTE $C1,$C1,$C2,$C0,$BC,$E4,$C2,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$C5,$C6,$C1,$B3,$C1
-        .BYTE $D9,$D3,$B3,$C1,$BD,$C4,$B3,$EE,$FB,$FC,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$D5,$D6,$D7,$B3,$C1
-        .BYTE $D0,$D1,$B3,$C1,$BE,$F2,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$B7,$E6,$E7,$B3,$C1
-        .BYTE $E0,$E1,$B3,$C1,$B9,$BF,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$CF,$E5,$F0,$B3,$C1
-        .BYTE $E8,$DA,$B3,$C1,$BB,$C8,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$CF,$E9,$C4,$B3,$C1
-        .BYTE $CF,$C4,$B3,$C1,$C9,$C1,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$D4,$CF,$E9,$B2,$C3,$B4
-        .BYTE $CF,$B2,$C3,$B4,$CF,$BA,$C3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$CA,$D8,$E9,$E9,$EA,$CE
-        .BYTE $D8,$E9,$EA,$CE,$D8,$F3,$CB,$CD,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
-        .BYTE $B0 ; -
-        .BYTE $B0 ; -
-        .BYTE $F4
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
-        .BYTE $F9
+STAGEPAL:   BYTE  $F,  0, $F,$30   
+MENUPAL:    BYTE  $F,  5,$30,$28, $F,  0, $F,$30 
+        BYTE  $F,  6,$26,$37, $F, $F, $F, $F
+byte_DFA0:  BYTE   5,  0,  9,  4, $D,  7,  2,  6 
+        BYTE  $A, $F, $C,  3,  8, $B, $E,  1
+MAINMENU_HI:    BYTE $B0,$B0,$DF,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C1,$C2,$C0,$B6,$E9,$B8
+        BYTE $C2,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C2,$C0,$C1,$C1,$C2,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$C1,$D9,$D3,$B3,$C1,$D9,$CB,$D3,$B3,$C1,$C5,$C6,$C1
+        BYTE $B3,$C1,$D9,$D3,$B3,$C1,$D9,$CB,$CB,$C1,$D9,$D3,$B3,$EE,$F8,$B0
+        BYTE $B0,$B0,$DF,$C1,$D0,$D1,$D2,$C1,$CF,$E9,$C4,$B3,$C1,$D5,$D6,$D7
+        BYTE $B3,$C1,$D0,$D1,$D2,$C1,$D0,$DC,$E9,$C1,$D0,$D1,$D2,$EB,$F8,$B0
+        BYTE $B0,$B0,$DF,$C1,$E0,$E1,$E2,$C1,$CF,$E9,$C4,$B3,$C1,$B7,$E6,$E7
+        BYTE $B3,$C1,$E0,$E1,$E2,$C1,$E0,$F5,$EC,$C1,$E0,$E1,$E2,$EF,$F8,$B0
+        BYTE $B0,$B0,$DF,$C1,$E8,$DA,$B3,$C1,$CF,$E9,$C4,$B3,$C1,$CF,$E5,$F0
+        BYTE $B3,$C1,$E8,$DA,$B3,$C1,$E8,$DB,$ED,$C1,$E8,$DA,$B3,$EB,$F8,$B0
+        BYTE $B0,$B0,$DF,$C1,$B5,$E3,$B3,$C1,$B5,$E9,$E3,$B3,$C1,$CF,$E9,$C4
+        BYTE $B3,$C1,$B5,$E3,$B3,$C1,$B5,$E9,$E9,$C1,$CF,$C4,$B3,$EB,$F8,$B0
+        BYTE $B0,$B0,$DF,$B1,$C1,$F1,$C3,$C7,$C1,$C1,$F1,$C3,$B4,$CF,$E9,$B2
+        BYTE $C3,$C7,$C1,$F1,$C3,$C7,$C1,$C1,$C3,$B4,$CF,$B2,$C3,$EB,$F8,$B0
+        BYTE $B0,$B0,$DF,$CA,$CB,$CB,$CB,$CE,$CB,$CB,$CB,$CB,$CE,$D8,$E9,$E9
+        BYTE $EA,$CE,$CB,$CB,$CB,$CE,$CB,$CB,$CB,$CE,$D8,$E9,$EA,$CD,$F8,$B0
+MAINMENU_LO:    BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C0,$B6,$E9,$B8,$C2,$C0
+        BYTE $C1,$C1,$C2,$C0,$BC,$E4,$C2,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$C5,$C6,$C1,$B3,$C1
+        BYTE $D9,$D3,$B3,$C1,$BD,$C4,$B3,$EE,$FB,$FC,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$D5,$D6,$D7,$B3,$C1
+        BYTE $D0,$D1,$B3,$C1,$BE,$F2,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$B7,$E6,$E7,$B3,$C1
+        BYTE $E0,$E1,$B3,$C1,$B9,$BF,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$CF,$E5,$F0,$B3,$C1
+        BYTE $E8,$DA,$B3,$C1,$BB,$C8,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$C1,$CF,$E9,$C4,$B3,$C1
+        BYTE $CF,$C4,$B3,$C1,$C9,$C1,$B3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$D4,$CF,$E9,$B2,$C3,$B4
+        BYTE $CF,$B2,$C3,$B4,$CF,$BA,$C3,$EB,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0,$B0,$DF,$E9,$E9,$E9,$E9,$E9,$E9,$E9,$CA,$D8,$E9,$E9,$EA,$CE
+        BYTE $D8,$E9,$EA,$CE,$D8,$F3,$CB,$CD,$E9,$E9,$E9,$E9,$E9,$E9,$F8,$B0
+        BYTE $B0 ; -
+        BYTE $B0 ; -
+        BYTE $F4
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
+        BYTE $F9
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -5038,35 +5040,35 @@ NEXTCHAR:
         RTS
 
 ; ---------------------------------------------------------------------------
-MENUTEXT:   .BYTE $22       
-        .BYTE $69
-        .BYTE "START",$B0,$B0,$B0,"CONTINUE"
-        .BYTE $FF
-        .BYTE $22
-        .BYTE $AA
-        .BYTE "TOP"
-        .BYTE $FF
-        .BYTE $22
-        .BYTE $E3
-        .BYTE "TM",$B0,"AND",$B0
-        .BYTE $FE
-        .BYTE $B0,"1987",$B0,"HUDSON",$B0,"SOFT"
-        .BYTE $FF
-        .BYTE $23
-        .BYTE $2A
-        .BYTE "LICENSED",$B0,"BY"
-        .BYTE $FF
-        .BYTE $23
-        .BYTE $64
-        .BYTE "NINTENDO",$B0,"OF",$B0,"AMERICA",$B0,"INC"
-        .BYTE $FD
-        .BYTE $FF
-STAGE_ROWS: .BYTE   1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
-        .BYTE   1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1
-        .BYTE   1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  1
+MENUTEXT:   BYTE $22       
+        BYTE $69
+        BYTE "START",$B0,$B0,$B0,"CONTINUE"
+        BYTE $FF
+        BYTE $22
+        BYTE $AA
+        BYTE "TOP"
+        BYTE $FF
+        BYTE $22
+        BYTE $E3
+        BYTE "TM",$B0,"AND",$B0
+        BYTE $FE
+        BYTE $B0,"1987",$B0,"HUDSON",$B0,"SOFT"
+        BYTE $FF
+        BYTE $23
+        BYTE $2A
+        BYTE "LICENSED",$B0,"BY"
+        BYTE $FF
+        BYTE $23
+        BYTE $64
+        BYTE "NINTENDO",$B0,"OF",$B0,"AMERICA",$B0,"INC"
+        BYTE $FD
+        BYTE $FF
+STAGE_ROWS: BYTE   1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+        BYTE   1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1
+        BYTE   1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  0,  1,  1
 
-MULT_TABY:  .BYTE   0,$20,$40,$60,$80,$A0,$C0,$E0,  0,$20,$40,$60,$80
-MULT_TABX:  .BYTE   2,  2,  2,  2,  2,  2,  2,  2,  3,  3,  3,  3,  3
+MULT_TABY:  BYTE   0,$20,$40,$60,$80,$A0,$C0,$E0,  0,$20,$40,$60,$80
+MULT_TABX:  BYTE   2,  2,  2,  2,  2,  2,  2,  2,  3,  3,  3,  3,  3
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -5182,9 +5184,9 @@ _get_pass_data_var_addr:
         RTS
 
 ; ---------------------------------------------------------------------------
-_pass_data_vars:.WORD   $67,  $77,  $DD,  $61,  $99,  $66,  $DC,  $64,  $79,  $9A
-        .WORD   $74,  $63,  $75,  $62,  $9B,  $65,  $94,  $DE,  $76,  $95
-aAofkcpgelbhmjd:.BYTE "AOFKCPGELBHMJDNI" 
+_pass_data_vars:WORD   $67,  $77,  $DD,  $61,  $99,  $66,  $DC,  $64,  $79,  $9A
+        WORD   $74,  $63,  $75,  $62,  $9B,  $65,  $94,  $DE,  $76,  $95
+aAofkcpgelbhmjd:BYTE "AOFKCPGELBHMJDNI" 
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR sub_E399
 
@@ -5405,7 +5407,7 @@ loc_E4B9:
         RTS
 
 ; ---------------------------------------------------------------------------
-byte_E4BC:  .BYTE   1,  2,$64,$32,  3,$C8 
+byte_E4BC:  BYTE   1,  2,$64,$32,  3,$C8 
 ; ---------------------------------------------------------------------------
 ; START OF FUNCTION CHUNK FOR APU_PLAY_MELODY
 
@@ -5615,14 +5617,14 @@ EXEC_EFFECT:
         RTS
 
 ; ---------------------------------------------------------------------------
-off_E5E6:   .WORD off_E5F4+1    
-        .WORD locret_E5FA
-        .WORD loc_E5FF+2
-        .WORD loc_E60D+2
-        .WORD loc_E618+2
-        .WORD loc_E62A+2
-        .WORD loc_E631+2
-off_E5F4:   .WORD loc_E638+2    
+off_E5E6:   WORD off_E5F4+1    
+        WORD locret_E5FA
+        WORD loc_E5FF+2
+        WORD loc_E60D+2
+        WORD loc_E618+2
+        WORD loc_E62A+2
+        WORD loc_E631+2
+off_E5F4:   WORD loc_E638+2    
 ; ---------------------------------------------------------------------------
         LDA #0
         STA APU_MUSIC
@@ -5767,21 +5769,21 @@ WRONG_SOUND:
 
 ; ---------------------------------------------------------------------------
 MOD_SOUND_TAB:  
-        .WORD APU_RESET-1   ; Reset APU state
-        .WORD S1_START-1
-        .WORD S2_START-1
-        .WORD S3_START-1
-        .WORD S4_START-1
-        .WORD S5_START-1
-        .WORD S6_START-1
+        WORD APU_RESET-1   ; Reset APU state
+        WORD S1_START-1
+        WORD S2_START-1
+        WORD S3_START-1
+        WORD S4_START-1
+        WORD S5_START-1
+        WORD S6_START-1
 CONST_SOUND_TAB:
-        .WORD WRONG_SOUND-1 
-        .WORD WRONG_SOUND-1
-        .WORD WRONG_SOUND-1
-        .WORD S3_UPDATE-1
-        .WORD S4_UPDATE-1
-        .WORD WRONG_SOUND-1
-        .WORD S6_UPDATE-1
+        WORD WRONG_SOUND-1 
+        WORD WRONG_SOUND-1
+        WORD WRONG_SOUND-1
+        WORD S3_UPDATE-1
+        WORD S4_UPDATE-1
+        WORD WRONG_SOUND-1
+        WORD S6_UPDATE-1
 ; ---------------------------------------------------------------------------
 
 S1_START:               
@@ -5878,7 +5880,7 @@ S4_PITCH1:
         DEC APU_SDELAY
         RTS
 ; ---------------------------------------------------------------------------
-S4_PITCH_TAB:   .BYTE $65,$87,$B4,$F0   
+S4_PITCH_TAB:   BYTE $65,$87,$B4,$F0   
 ; ---------------------------------------------------------------------------
 
 S5_START:               
@@ -5947,166 +5949,166 @@ S6_PITCH:
         STA APU_PATTERN
         RTS
 ; ---------------------------------------------------------------------------
-S6_SQ1MOD_TAB: .BYTE $A9, $A0
-S6_SQ2MOD_TAB: .BYTE $6A, $64
+S6_SQ1MOD_TAB: BYTE $A9, $A0
+S6_SQ2MOD_TAB: BYTE $6A, $64
 
 ; Wavelength for square wave notes on an NTSC system (triangle wave are one octave lower)
 WAVELEN_TAB:
-        .WORD     0     ; Silence
+        WORD     0     ; Silence
         ;       A    Bb     B     C    C#     D    D#     E     F    F#     G    G#     Scientific designation
-        .WORD  $7F0, $77E, $712, $6AE, $64E, $5F3, $59F, $54D, $501, $4B9, $475, $435       ; Octave 2
-        .WORD  $3F8, $3BF, $389, $357, $327, $2F9, $2CF, $2A6, $280, $25C, $23A, $21A       ; Octave 3
-        .WORD  $1FC, $1DF, $1C4, $1AB, $193, $17C, $167, $152, $13F, $12D, $11C, $10C       ; Octave 4 (With middle C)
-        .WORD   $FD,  $EE,  $E1,  $D4,  $C8,  $BD,  $B2,  $A8,  $9F,  $96,  $8D,  $85       ; Octave 5
-        .WORD   $7E,  $76,  $70,  $69,  $63,  $5E,  $58,  $53,  $4F,  $4A,  $46,  $42       ; Octave 6
-        .WORD   $3E,  $3A,  $37,  $34,  $31,  $2E,  $2B,  $29,  $27,  $24,  $22,  $20       ; Octave 7
-        .WORD   $1E,  $1C,  $1B,  $1A                                                       ; Octave 8
+        WORD  $7F0, $77E, $712, $6AE, $64E, $5F3, $59F, $54D, $501, $4B9, $475, $435       ; Octave 2
+        WORD  $3F8, $3BF, $389, $357, $327, $2F9, $2CF, $2A6, $280, $25C, $23A, $21A       ; Octave 3
+        WORD  $1FC, $1DF, $1C4, $1AB, $193, $17C, $167, $152, $13F, $12D, $11C, $10C       ; Octave 4 (With middle C)
+        WORD   $FD,  $EE,  $E1,  $D4,  $C8,  $BD,  $B2,  $A8,  $9F,  $96,  $8D,  $85       ; Octave 5
+        WORD   $7E,  $76,  $70,  $69,  $63,  $5E,  $58,  $53,  $4F,  $4A,  $46,  $42       ; Octave 6
+        WORD   $3E,  $3A,  $37,  $34,  $31,  $2E,  $2B,  $29,  $27,  $24,  $22,  $20       ; Octave 7
+        WORD   $1E,  $1C,  $1B,  $1A                                                       ; Octave 8
 
 APU_MELODIES_TAB:
-        .WORD TUNE1_TRI,    TUNE1_SQ2,    TUNE1_SQ1,  $8080 ; 1: TITLE
-        .WORD TUNE2_TRI,    TUNE2_SQ2,    TUNE2_SQ1,  $4040 ; 2: STAGE_SCREEN
-        .WORD         0,            0,    TUNE3_SQ1,  $8080 ; 3: STAGE
-        .WORD TUNE4_TRI,    TUNE4_SQ2,    TUNE4_SQ1,  $8080 ; 4: STAGE2
-        .WORD TUNE5_TRI,    TUNE5_SQ2,    TUNE5_SQ1,  $8080 ; 5: GODMODE
-        .WORD TUNE6_TRI,    TUNE6_SQ2,    TUNE6_SQ1,  $8080 ; 6: BONUS
-        .WORD TUNE7_TRI,    TUNE7_SQ2,    TUNE7_SQ1,  $0040 ; 7: FANFARE
-        .WORD TUNE8_TRI,    TUNE8_SQ2,            0,  $8080 ; 8: DIED
-        .WORD TUNE9_TRI,    TUNE9_SQ2,    TUNE9_SQ1,  $8080 ; 9: GAMEOVER
-        .WORD TUNE7_TRI+55, TUNE7_SQ2+59, TUNE10_SQ1, $0040 ; 10: ??? (not used music)
+        WORD TUNE1_TRI,    TUNE1_SQ2,    TUNE1_SQ1,  $8080 ; 1: TITLE
+        WORD TUNE2_TRI,    TUNE2_SQ2,    TUNE2_SQ1,  $4040 ; 2: STAGE_SCREEN
+        WORD         0,            0,    TUNE3_SQ1,  $8080 ; 3: STAGE
+        WORD TUNE4_TRI,    TUNE4_SQ2,    TUNE4_SQ1,  $8080 ; 4: STAGE2
+        WORD TUNE5_TRI,    TUNE5_SQ2,    TUNE5_SQ1,  $8080 ; 5: GODMODE
+        WORD TUNE6_TRI,    TUNE6_SQ2,    TUNE6_SQ1,  $8080 ; 6: BONUS
+        WORD TUNE7_TRI,    TUNE7_SQ2,    TUNE7_SQ1,  $0040 ; 7: FANFARE
+        WORD TUNE8_TRI,    TUNE8_SQ2,            0,  $8080 ; 8: DIED
+        WORD TUNE9_TRI,    TUNE9_SQ2,    TUNE9_SQ1,  $8080 ; 9: GAMEOVER
+        WORD TUNE7_TRI+55, TUNE7_SQ2+59, TUNE10_SQ1, $0040 ; 10: ??? (not used music)
 
-TUNE7_TRI:  .BYTE $B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C,$2E,$F8,$98
-        .BYTE $2D,$86,$2D,$2E,$8C,$2D,$C8,$2B,$86,$32,$33,$8C,$32,$B0,$30,$8C
-        .BYTE   0,$26,$28,$B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C
-        .BYTE $2E,$F8,$98,$2D,$86,$2D,$2E,$8C,$2D,$2B,$32,$33,$30,  0,$92,$30
-        .BYTE $83,$32,$34,$8C,$35,  0,$1D,$86,$1D,$1D,$8C,$1D,  0,$98,  0,$FF
-TUNE7_SQ2:  .BYTE $B0,$21,$AA,$21,$86,$21,$A4,$2D,$86,$2D,$30,$F9,$8C,$29,$F8,$98
-        .BYTE $29,$86,$24,$29,$8C,$24,$C8,$27,$86,$2E,$2B,$8C,$2E,$28,$92,$24
-        .BYTE $86,$24,$8C,$24,$24,$24,$24,$B0,$21,$AA,$21,$86,$21,$A4,$2D,$86
-        .BYTE $2D,$30,$F9,$8C,$29,$F8,$98,$29,$86,$24,$29,$8C,$29,$26,$2B,$2E
-        .BYTE $28,  0,$92,$28,$83,$29,$2B,$8C,$2D,  0,$11,$86,$11,$11,$8C,$11
-        .BYTE   0,$98,  0,$FF
-TUNE7_SQ1:  .BYTE $F9,$FD,  2,$98,$1D,$1C,$1A,$18,$FC,$1B,$1A,$18,$16,$18,$18,$1A
-        .BYTE $1C,$FD,  2,$1D,$1C,$1A,$18,$FC
-TUNE10_SQ1: .BYTE $F8,$8C,$1F,$1D,$1B,$2B,$18,  0,$92,$18,$83,$18,$18,$8C,$29,  0
-        .BYTE $11,$86,$11,$11,$8C,$11,  0,$98,  0,$FF
-TUNE9_TRI:  .BYTE $98,$28,$92,$24,$86,$24,$98,$27,$92,$24,$86,$24,$28,$29,$2A,$2B
-        .BYTE $F9,$8C,$28,$24,$F8,$98,$22,$29,$28,$92,$24,$86,$24,$98,$27,$92
-        .BYTE $24,$86,$24,$8C,$22,$84,$21,$20,$1F,$F9,$8C,$22,$23,$F8,$24,  0
-        .BYTE $98,  0,$FF
-TUNE9_SQ2:  .BYTE $E0,  0,$86,$1F,$21,$22,$23,$F9,$8C,$1F,$1C,$F8,$98,$1D,$22,$1F
-        .BYTE $92,$1C,$86,$1C,$98,$1E,$92,$1B,$86,$1E,$8C,$16,$84,$15,$14,$13
-        .BYTE $F9,$8C,$16,$17,$F8,$18,  0, $C,  0,$FF
-TUNE9_SQ1:  .BYTE $8C,$18,$1F,  0,$1F,$18,$1F,  0,$1F,$18,$1F,  0,$1F,$14,$1B,  0
-        .BYTE $1B,$18,$1F,  0,$1F,$14,$1B,  0,$1B,$16,$84,$15,$14,$13,$F9,$8C
-        .BYTE $16,$17,$F8,$18,  0, $C,  0,$FF
-TUNE6_TRI:  .BYTE $94,  0,$85,$2C,$2C,$33,$33,$8A,$33,  0,$85,$2C,$2C,$33,$33,$32
-        .BYTE $32,$30,$30,$2E,$2E,$29,$29,$26,$26,$24,$24,$94,$22,  0,$85,$31
-        .BYTE $31,$36,$36,$8A,$36,  0,$85,$31,$31,$3A,$3A,$37,$37,$35,$35,$33
-        .BYTE $33,$31,$31,$30,$30,$2E,$2E,$2C,$2C,$2B,$2B,$FE
-TUNE6_SQ2:  .BYTE $94,  0,$85,$24,$24,$30,$30,$8A,$30,  0,$85,$24,$24,$30,$30,$2E
-        .BYTE $2E,$2D,$2D,$29,$29,$26,$26,$22,$22,$1D,$1D,$94,$1A,  0,$85,$2E
-        .BYTE $2E,$31,$31,$8A,$31,  0,$85,$2E,$2E,$31,$31,$33,$33,$31,$31,$30
-        .BYTE $30,$2E,$2E,$2C,$2C,$2B,$2B,$24,$24,$22,$22,$FE
-TUNE6_SQ1:  .BYTE $85,$14,$14,$20,$20,$2C,$2C,$20,$20,$14,$14,$20,$20,$2C,$2C,$20
-        .BYTE $20,$16,$16,$22,$22,$2E,$2E,$22,$22,$16,$16,$22,$22,$16,$16,$22
-        .BYTE $22,$12,$12,$1E,$1E,$2A,$2A,$1E,$1E,$12,$12,$1E,$1E,$2A,$2A,$1E
-        .BYTE $1E, $F, $F,$1B,$1B,$27,$27,$1B,$1B, $F, $F,$1B,$1B,$27,$27,$25
-        .BYTE $25,$FE
-TUNE8_TRI:  .BYTE $83,$30,$2B,$24,$1F,$18,$13, $C,  7,$18,$17,$16,$15,$14,$15,$16 ; +
-        .BYTE $17,$92,$18,$86,$18,$F9,$8C,$1B,$1B,$F8,$98,$18,  0,$FF ;
-TUNE8_SQ2:  .BYTE $98,  0,$83, $C, $B, $A,  9,  8,  9, $A, $B,$92, $C,$86, $C,$F9
-        .BYTE $8C, $F, $F,$F8,$98, $C,  0,$FF
-TUNE1_TRI:  .BYTE $87,$27,$33,$3F,$33,$36,$37,$33,$31,$27,$33,$3F,$33,$36,$37,$33
-        .BYTE $31,$16,$16,$F9,$8E,$16,$F8,$87,$22,$22,$F9,$8E,$2E, $D, $F,$F8
-        .BYTE $87,$38,$2E,$33,$38,$FD,  3,$F9,$8E,$37,$33,$32,$33,$F8,$9C,$2E
-        .BYTE $87,$2C,$2E,$2A,$2B,$8E,  0,$3A,  0,$3A,$87,$33,$33,$F9,$8E,$33
-        .BYTE $F8,$87,$38,$2E,$33,$38,$FC,$F9,$8E,$37,$F8,$87,$32,$33,$2C,$2E
-        .BYTE $F9,$8E,$2B,$F8,$87,$2C,$2C,$F9,$8E,$2C,$F8,$87,$2B,$2B,$F9,$8E
-        .BYTE $2B,$27,$27,  0,$F8,$87,$25,$26,$8E,$27,  0,$9C,  0,$FF
-TUNE1_SQ2:  .BYTE $87,$1B,$27,$33,$27,$2A,$2B,$27,$25,$1B,$27,$33,$27,$2A,$2B,$27
-        .BYTE $25,$13,$13,$F9,$8E,$13,$F8,$87,$1F,$1F,$F9,$8E,$2B,  1,  2,$F8
-        .BYTE $87,$2C,$22,$27,$2C,$FD,  3,$F9,$8E,$31,$2E,$2A,$2B,$F8,$9C,$25
-        .BYTE   0,$8E,$27,$22,$25,$2C,$9C,$2B,$87,$35,$22,$30,$33,$FC,$F9,$8E
-        .BYTE $33,$F8,$87,$2A,$2B,$26,$27,$F9,$8E,$22,$F8,$87,$27,$27,$F9,$8E
-        .BYTE $27,$F8,$87,$27,$27,$F9,$8E,$27,$1F,$1F,  0,$F8,$87,$19,$1A,$8E
-        .BYTE $1B,  0,$9C,  0,$FF
-TUNE1_SQ1:  .BYTE $87,$1B,$1B,$1B,$1B,$9C,  0,$87,$1B,$1B,$1B,$1B,$9C,  0,$87,$19
-        .BYTE $19,$F9,$8E,$19,$F8,$87,$25,$25,$F9,$8E,$32,$F8,$B8,  0,$FD,  3
-        .BYTE $87,$1B,$1B,$F9,$8E,$1B,$1E,$F8,$87,$1F,$22,$27,$1B,$1B,$1B,$1E
-        .BYTE $F9,$8E,$1F,$F8,$87,$18,$19,$19,$19,$25,$18,$1A,$8E,$16,$87,$25
-        .BYTE $19,$19,$19,$9C,  0,$FC,$F9,$8E,$2E,$F8,$87,$2D,$2E,$2A,$2B,$27
-        .BYTE $22,$9C,  0,$87,$23,$23,$F9,$8E,$23,$22,$22,$F8,  0,$87,$19,$1A
-        .BYTE $8E,$1B,  0,$9C,  0,$FF
-TUNE5_TRI:  .BYTE $FD,  2,$90,$25,$88,$27,$29,  0,$29,$2B,  0,$FC,$C0,  0,$88,$22
-        .BYTE $19,$22,$20,$1F,$19,$1F,$20,$FD,  2,$27,$29,$27,$2A,  0,$29,$27
-        .BYTE   0,$FC,$C0,  0,$88,$20,$17,$20,$1E,$1D,$17,$1D,$1F,$FE
-TUNE5_SQ2:  .BYTE $FD,  2,$90,$22,$88,$24,$26,  0,$26,$27,  0,$FC,$FD,  2,$1B,$13
-        .BYTE $1B,$19,$18,$13,$18,$19,$FC,$FD,  2,$23,$25,$23,$27,  0,$25,$23
-        .BYTE   0,$FC,$FD,  2,$19,$11,$19,$17,$16,$11,$16,$19,$FC,$FE
-TUNE5_SQ1:  .BYTE $FD,  4,$90,$1B,$1B,$1B,$1B,$FC,$FD,  4,$19,$19,$19,$19,$FC,$FE
-TUNE2_TRI:  .BYTE $85,$33,  0,$32,$33,$32,$33,$32,$33,$2E,  0,$2D,$2E,$2D,$2E,$2D
-        .BYTE $2E,$2B,$2C,$2D,$2E,$2B,$2C,$2D,$2E,$2B,  0,$27,  0,$94,$25,$FF
-TUNE2_SQ2:  .BYTE $85,$2B,  0,$2A,$2B,$2A,$2B,$2A,$2B,$27,  0,$26,$27,$26,$27,$26
-        .BYTE $27,$27,$29,$2A,$2B,$27,$29,$2A,$2B,$27,  0,$1F,  0,$94,$22,$FF
-TUNE2_SQ1:  .BYTE $F9,$8A,$1B,$1B,$1F,$22,$1B,$1B,$1F,$22,$F8,$85,$22,$24,$26,$27
-        .BYTE $22,$24,$26,$27,$F9,$8A,$22,$1B,$F8,$94,$16,$FF
-TUNE4_SQ1:  .BYTE $FD,  2,$87,$27,$27,$F9,$8E,$30,$31,$F8,$87,$22,$22,$F9,$8E,$2E
-        .BYTE $30,$F8,$87,$31,$30,$F9,$8E,$2E,$F8,$FC,$FD,  2,$87,$25,$25,$F9
-        .BYTE $8E,$2E,$2F,$F8,$87,$20,$20,$F9,$8E,$2C,$2E,$F8,$87,$2F,$2E,$F9
-        .BYTE $8E,$2C,$F8,$FC,$FE
-TUNE4_TRI:  .BYTE $9C,  0,$87,$25,$95,  0,$B8,  0,$9C,  0,$95,$27,$87,$27,$F9,$8E
-        .BYTE $2C,$2B,$F8,$27,  0,$9C,  0,$87,$23,$95,  0,$B8,  0,$9C,  0,$95
-        .BYTE $25,$87,$25,$F9,$8E,$2A,$F8,$87,$29,$2A,$8E,$25,  0,$FE
-TUNE4_SQ2:  .BYTE $9C,  0,$87,$1D,$95,  0,$B8,  0,$9C,  0,$87,$1D,$95,  0,$B8,  0
-        .BYTE $9C,  0,$87,$1B,$95,  0,$B8,  0,$9C,  0,$87,$1B,$95,  0,$B8,  0
-        .BYTE $FE
-TUNE3_SQ1:  .BYTE $87,$27,$27,$33,$27,$F9,$8E,$2A,$F8,$87,$2E,$30,$F9,$8E,$31,$31
-        .BYTE $F8,$30,  0,$87,$25,$25,$31,$25,$F9,$8E,$29,$F8,$87,$2C,$2E,$F9
-        .BYTE $8E,$2F,$F8,$87,$2E,$2F,$25,$24,$F9,$8E,$25,$F8,$87,$22,$22,$2E
-        .BYTE $22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8,$22,  0,$87
-        .BYTE $22,$22,$2E,$22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8
-        .BYTE $87,$22,$22,$24,$26,$FE
+TUNE7_TRI:  BYTE $B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C,$2E,$F8,$98
+        BYTE $2D,$86,$2D,$2E,$8C,$2D,$C8,$2B,$86,$32,$33,$8C,$32,$B0,$30,$8C
+        BYTE   0,$26,$28,$B0,$29,$AA,$29,$86,$29,$A4,$30,$86,$30,$35,$F9,$8C
+        BYTE $2E,$F8,$98,$2D,$86,$2D,$2E,$8C,$2D,$2B,$32,$33,$30,  0,$92,$30
+        BYTE $83,$32,$34,$8C,$35,  0,$1D,$86,$1D,$1D,$8C,$1D,  0,$98,  0,$FF
+TUNE7_SQ2:  BYTE $B0,$21,$AA,$21,$86,$21,$A4,$2D,$86,$2D,$30,$F9,$8C,$29,$F8,$98
+        BYTE $29,$86,$24,$29,$8C,$24,$C8,$27,$86,$2E,$2B,$8C,$2E,$28,$92,$24
+        BYTE $86,$24,$8C,$24,$24,$24,$24,$B0,$21,$AA,$21,$86,$21,$A4,$2D,$86
+        BYTE $2D,$30,$F9,$8C,$29,$F8,$98,$29,$86,$24,$29,$8C,$29,$26,$2B,$2E
+        BYTE $28,  0,$92,$28,$83,$29,$2B,$8C,$2D,  0,$11,$86,$11,$11,$8C,$11
+        BYTE   0,$98,  0,$FF
+TUNE7_SQ1:  BYTE $F9,$FD,  2,$98,$1D,$1C,$1A,$18,$FC,$1B,$1A,$18,$16,$18,$18,$1A
+        BYTE $1C,$FD,  2,$1D,$1C,$1A,$18,$FC
+TUNE10_SQ1: BYTE $F8,$8C,$1F,$1D,$1B,$2B,$18,  0,$92,$18,$83,$18,$18,$8C,$29,  0
+        BYTE $11,$86,$11,$11,$8C,$11,  0,$98,  0,$FF
+TUNE9_TRI:  BYTE $98,$28,$92,$24,$86,$24,$98,$27,$92,$24,$86,$24,$28,$29,$2A,$2B
+        BYTE $F9,$8C,$28,$24,$F8,$98,$22,$29,$28,$92,$24,$86,$24,$98,$27,$92
+        BYTE $24,$86,$24,$8C,$22,$84,$21,$20,$1F,$F9,$8C,$22,$23,$F8,$24,  0
+        BYTE $98,  0,$FF
+TUNE9_SQ2:  BYTE $E0,  0,$86,$1F,$21,$22,$23,$F9,$8C,$1F,$1C,$F8,$98,$1D,$22,$1F
+        BYTE $92,$1C,$86,$1C,$98,$1E,$92,$1B,$86,$1E,$8C,$16,$84,$15,$14,$13
+        BYTE $F9,$8C,$16,$17,$F8,$18,  0, $C,  0,$FF
+TUNE9_SQ1:  BYTE $8C,$18,$1F,  0,$1F,$18,$1F,  0,$1F,$18,$1F,  0,$1F,$14,$1B,  0
+        BYTE $1B,$18,$1F,  0,$1F,$14,$1B,  0,$1B,$16,$84,$15,$14,$13,$F9,$8C
+        BYTE $16,$17,$F8,$18,  0, $C,  0,$FF
+TUNE6_TRI:  BYTE $94,  0,$85,$2C,$2C,$33,$33,$8A,$33,  0,$85,$2C,$2C,$33,$33,$32
+        BYTE $32,$30,$30,$2E,$2E,$29,$29,$26,$26,$24,$24,$94,$22,  0,$85,$31
+        BYTE $31,$36,$36,$8A,$36,  0,$85,$31,$31,$3A,$3A,$37,$37,$35,$35,$33
+        BYTE $33,$31,$31,$30,$30,$2E,$2E,$2C,$2C,$2B,$2B,$FE
+TUNE6_SQ2:  BYTE $94,  0,$85,$24,$24,$30,$30,$8A,$30,  0,$85,$24,$24,$30,$30,$2E
+        BYTE $2E,$2D,$2D,$29,$29,$26,$26,$22,$22,$1D,$1D,$94,$1A,  0,$85,$2E
+        BYTE $2E,$31,$31,$8A,$31,  0,$85,$2E,$2E,$31,$31,$33,$33,$31,$31,$30
+        BYTE $30,$2E,$2E,$2C,$2C,$2B,$2B,$24,$24,$22,$22,$FE
+TUNE6_SQ1:  BYTE $85,$14,$14,$20,$20,$2C,$2C,$20,$20,$14,$14,$20,$20,$2C,$2C,$20
+        BYTE $20,$16,$16,$22,$22,$2E,$2E,$22,$22,$16,$16,$22,$22,$16,$16,$22
+        BYTE $22,$12,$12,$1E,$1E,$2A,$2A,$1E,$1E,$12,$12,$1E,$1E,$2A,$2A,$1E
+        BYTE $1E, $F, $F,$1B,$1B,$27,$27,$1B,$1B, $F, $F,$1B,$1B,$27,$27,$25
+        BYTE $25,$FE
+TUNE8_TRI:  BYTE $83,$30,$2B,$24,$1F,$18,$13, $C,  7,$18,$17,$16,$15,$14,$15,$16 ; +
+        BYTE $17,$92,$18,$86,$18,$F9,$8C,$1B,$1B,$F8,$98,$18,  0,$FF ;
+TUNE8_SQ2:  BYTE $98,  0,$83, $C, $B, $A,  9,  8,  9, $A, $B,$92, $C,$86, $C,$F9
+        BYTE $8C, $F, $F,$F8,$98, $C,  0,$FF
+TUNE1_TRI:  BYTE $87,$27,$33,$3F,$33,$36,$37,$33,$31,$27,$33,$3F,$33,$36,$37,$33
+        BYTE $31,$16,$16,$F9,$8E,$16,$F8,$87,$22,$22,$F9,$8E,$2E, $D, $F,$F8
+        BYTE $87,$38,$2E,$33,$38,$FD,  3,$F9,$8E,$37,$33,$32,$33,$F8,$9C,$2E
+        BYTE $87,$2C,$2E,$2A,$2B,$8E,  0,$3A,  0,$3A,$87,$33,$33,$F9,$8E,$33
+        BYTE $F8,$87,$38,$2E,$33,$38,$FC,$F9,$8E,$37,$F8,$87,$32,$33,$2C,$2E
+        BYTE $F9,$8E,$2B,$F8,$87,$2C,$2C,$F9,$8E,$2C,$F8,$87,$2B,$2B,$F9,$8E
+        BYTE $2B,$27,$27,  0,$F8,$87,$25,$26,$8E,$27,  0,$9C,  0,$FF
+TUNE1_SQ2:  BYTE $87,$1B,$27,$33,$27,$2A,$2B,$27,$25,$1B,$27,$33,$27,$2A,$2B,$27
+        BYTE $25,$13,$13,$F9,$8E,$13,$F8,$87,$1F,$1F,$F9,$8E,$2B,  1,  2,$F8
+        BYTE $87,$2C,$22,$27,$2C,$FD,  3,$F9,$8E,$31,$2E,$2A,$2B,$F8,$9C,$25
+        BYTE   0,$8E,$27,$22,$25,$2C,$9C,$2B,$87,$35,$22,$30,$33,$FC,$F9,$8E
+        BYTE $33,$F8,$87,$2A,$2B,$26,$27,$F9,$8E,$22,$F8,$87,$27,$27,$F9,$8E
+        BYTE $27,$F8,$87,$27,$27,$F9,$8E,$27,$1F,$1F,  0,$F8,$87,$19,$1A,$8E
+        BYTE $1B,  0,$9C,  0,$FF
+TUNE1_SQ1:  BYTE $87,$1B,$1B,$1B,$1B,$9C,  0,$87,$1B,$1B,$1B,$1B,$9C,  0,$87,$19
+        BYTE $19,$F9,$8E,$19,$F8,$87,$25,$25,$F9,$8E,$32,$F8,$B8,  0,$FD,  3
+        BYTE $87,$1B,$1B,$F9,$8E,$1B,$1E,$F8,$87,$1F,$22,$27,$1B,$1B,$1B,$1E
+        BYTE $F9,$8E,$1F,$F8,$87,$18,$19,$19,$19,$25,$18,$1A,$8E,$16,$87,$25
+        BYTE $19,$19,$19,$9C,  0,$FC,$F9,$8E,$2E,$F8,$87,$2D,$2E,$2A,$2B,$27
+        BYTE $22,$9C,  0,$87,$23,$23,$F9,$8E,$23,$22,$22,$F8,  0,$87,$19,$1A
+        BYTE $8E,$1B,  0,$9C,  0,$FF
+TUNE5_TRI:  BYTE $FD,  2,$90,$25,$88,$27,$29,  0,$29,$2B,  0,$FC,$C0,  0,$88,$22
+        BYTE $19,$22,$20,$1F,$19,$1F,$20,$FD,  2,$27,$29,$27,$2A,  0,$29,$27
+        BYTE   0,$FC,$C0,  0,$88,$20,$17,$20,$1E,$1D,$17,$1D,$1F,$FE
+TUNE5_SQ2:  BYTE $FD,  2,$90,$22,$88,$24,$26,  0,$26,$27,  0,$FC,$FD,  2,$1B,$13
+        BYTE $1B,$19,$18,$13,$18,$19,$FC,$FD,  2,$23,$25,$23,$27,  0,$25,$23
+        BYTE   0,$FC,$FD,  2,$19,$11,$19,$17,$16,$11,$16,$19,$FC,$FE
+TUNE5_SQ1:  BYTE $FD,  4,$90,$1B,$1B,$1B,$1B,$FC,$FD,  4,$19,$19,$19,$19,$FC,$FE
+TUNE2_TRI:  BYTE $85,$33,  0,$32,$33,$32,$33,$32,$33,$2E,  0,$2D,$2E,$2D,$2E,$2D
+        BYTE $2E,$2B,$2C,$2D,$2E,$2B,$2C,$2D,$2E,$2B,  0,$27,  0,$94,$25,$FF
+TUNE2_SQ2:  BYTE $85,$2B,  0,$2A,$2B,$2A,$2B,$2A,$2B,$27,  0,$26,$27,$26,$27,$26
+        BYTE $27,$27,$29,$2A,$2B,$27,$29,$2A,$2B,$27,  0,$1F,  0,$94,$22,$FF
+TUNE2_SQ1:  BYTE $F9,$8A,$1B,$1B,$1F,$22,$1B,$1B,$1F,$22,$F8,$85,$22,$24,$26,$27
+        BYTE $22,$24,$26,$27,$F9,$8A,$22,$1B,$F8,$94,$16,$FF
+TUNE4_SQ1:  BYTE $FD,  2,$87,$27,$27,$F9,$8E,$30,$31,$F8,$87,$22,$22,$F9,$8E,$2E
+        BYTE $30,$F8,$87,$31,$30,$F9,$8E,$2E,$F8,$FC,$FD,  2,$87,$25,$25,$F9
+        BYTE $8E,$2E,$2F,$F8,$87,$20,$20,$F9,$8E,$2C,$2E,$F8,$87,$2F,$2E,$F9
+        BYTE $8E,$2C,$F8,$FC,$FE
+TUNE4_TRI:  BYTE $9C,  0,$87,$25,$95,  0,$B8,  0,$9C,  0,$95,$27,$87,$27,$F9,$8E
+        BYTE $2C,$2B,$F8,$27,  0,$9C,  0,$87,$23,$95,  0,$B8,  0,$9C,  0,$95
+        BYTE $25,$87,$25,$F9,$8E,$2A,$F8,$87,$29,$2A,$8E,$25,  0,$FE
+TUNE4_SQ2:  BYTE $9C,  0,$87,$1D,$95,  0,$B8,  0,$9C,  0,$87,$1D,$95,  0,$B8,  0
+        BYTE $9C,  0,$87,$1B,$95,  0,$B8,  0,$9C,  0,$87,$1B,$95,  0,$B8,  0
+        BYTE $FE
+TUNE3_SQ1:  BYTE $87,$27,$27,$33,$27,$F9,$8E,$2A,$F8,$87,$2E,$30,$F9,$8E,$31,$31
+        BYTE $F8,$30,  0,$87,$25,$25,$31,$25,$F9,$8E,$29,$F8,$87,$2C,$2E,$F9
+        BYTE $8E,$2F,$F8,$87,$2E,$2F,$25,$24,$F9,$8E,$25,$F8,$87,$22,$22,$2E
+        BYTE $22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8,$22,  0,$87
+        BYTE $22,$22,$2E,$22,$F9,$8E,$2C,$F8,$87,$2B,$2C,$F9,$8E,$22,$2E,$F8
+        BYTE $87,$22,$22,$24,$26,$FE
 
-DEMO_KEYDATA:   .BYTE $3D,  1,  3,$81,  3,$80,$1B,  4,  6,$84,$1B,  4,  2,  5,$34,  1,  8,$41,$13,  1
-        .BYTE   1,  0,  6,  1,  1,  0, $F,  1,  1,  0,  3,  1,  1,  0,$11,  1,  6,$81,$1B,  1
-        .BYTE   3,$81, $E,  1,$1A,  0,$11,  1,  5,$81,$16,  1,  2,  0,  1,  1,$11,  4,$10,  0
-        .BYTE $10,$40,$10,  0,  2,  4,  1,  0,  1,  4,  1,  0, $E,  4,  1,  0,  2,  4,  1,  0
-        .BYTE   1,  4,$38,  0,$1A,  4,  3,  0,  4,  2,  1,  0,  4,$80,  9,  0,$16,  2,  2,  0
-        .BYTE   2,  4,  5,  2,  1,  0,$15,  4,$3A,  0, $A,$40,$17,  0, $D,  4,  2,  0,  6,$80
-        .BYTE   6,  0,$1D,  8,  1,  0, $C,  1,  2,  0,  9,$40, $A,  0,$28,  2,  1,  0,$20,  2
-        .BYTE $1E,  4,  2,$84,  5,$80,$5D,  1,  6,  0,$1D,  2,$21,  8,  4,  0,  6,$80,  3,  0
-        .BYTE $1A,  2,  2,  0, $F,  8,  2,  0,  9,$40,  8,  0,  8,$40,$14,  0, $F,  8,  1,  0
-        .BYTE  $D,  8,  1,  0,  1,  8,  1,  0,$11,  8,  2,  0,$1E,  1,  6,$81,$15,  1,  5,$81
-        .BYTE $19,  1,  6,$81,  6,  0,$1C,  4,  6,$84,  1,$81,  1,  1,  3,  0,$1B,  1,  1,  0
-        .BYTE  $E,  8,  1,$48,  8,$40,$17,  0, $D,  4,  1,$84,  6,$80,  2,  0,$1E,  2,  4,$82
-        .BYTE   1,$80,  1,  0,$1F,  4,  5,$84,$1E,  4,  4,$84,  2,$80,$1C,  2,  2,  0, $F,  8
-        .BYTE   1,  0,  9,$40,$11,  0, $F,  4,  1,  5,  1,  0,  4,  1,  9,$81,$14,  1,  6,$81
-        .BYTE $19,  1,  1,  0, $E,  8,  3,$48,  1,  0,  6,$40,$14,  0,  6,$80,  2,$88,  4,  8
-        .BYTE   1,  0,  8,  8,  1,  0,  3,  8,  2,$88,  1,  0,  2,$88,  1,  0,$14,  8,  5,$88
-        .BYTE   4,  8,  2,  0,$1B,  1,  7,$81,$18,  1,  6,$81,$15,  1,  2,  9,$10,  8, $A,$40
-        .BYTE $1A,  0, $A,  4,  1,  0,  6,  4,  1,  0,$1E,  2,  6,  0,$10,  8,  3,$84,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .BYTE $FF,$FF,$FF,$FF,$FF,$FF
+DEMO_KEYDATA:   BYTE $3D,  1,  3,$81,  3,$80,$1B,  4,  6,$84,$1B,  4,  2,  5,$34,  1,  8,$41,$13,  1
+        BYTE   1,  0,  6,  1,  1,  0, $F,  1,  1,  0,  3,  1,  1,  0,$11,  1,  6,$81,$1B,  1
+        BYTE   3,$81, $E,  1,$1A,  0,$11,  1,  5,$81,$16,  1,  2,  0,  1,  1,$11,  4,$10,  0
+        BYTE $10,$40,$10,  0,  2,  4,  1,  0,  1,  4,  1,  0, $E,  4,  1,  0,  2,  4,  1,  0
+        BYTE   1,  4,$38,  0,$1A,  4,  3,  0,  4,  2,  1,  0,  4,$80,  9,  0,$16,  2,  2,  0
+        BYTE   2,  4,  5,  2,  1,  0,$15,  4,$3A,  0, $A,$40,$17,  0, $D,  4,  2,  0,  6,$80
+        BYTE   6,  0,$1D,  8,  1,  0, $C,  1,  2,  0,  9,$40, $A,  0,$28,  2,  1,  0,$20,  2
+        BYTE $1E,  4,  2,$84,  5,$80,$5D,  1,  6,  0,$1D,  2,$21,  8,  4,  0,  6,$80,  3,  0
+        BYTE $1A,  2,  2,  0, $F,  8,  2,  0,  9,$40,  8,  0,  8,$40,$14,  0, $F,  8,  1,  0
+        BYTE  $D,  8,  1,  0,  1,  8,  1,  0,$11,  8,  2,  0,$1E,  1,  6,$81,$15,  1,  5,$81
+        BYTE $19,  1,  6,$81,  6,  0,$1C,  4,  6,$84,  1,$81,  1,  1,  3,  0,$1B,  1,  1,  0
+        BYTE  $E,  8,  1,$48,  8,$40,$17,  0, $D,  4,  1,$84,  6,$80,  2,  0,$1E,  2,  4,$82
+        BYTE   1,$80,  1,  0,$1F,  4,  5,$84,$1E,  4,  4,$84,  2,$80,$1C,  2,  2,  0, $F,  8
+        BYTE   1,  0,  9,$40,$11,  0, $F,  4,  1,  5,  1,  0,  4,  1,  9,$81,$14,  1,  6,$81
+        BYTE $19,  1,  1,  0, $E,  8,  3,$48,  1,  0,  6,$40,$14,  0,  6,$80,  2,$88,  4,  8
+        BYTE   1,  0,  8,  8,  1,  0,  3,  8,  2,$88,  1,  0,  2,$88,  1,  0,$14,  8,  5,$88
+        BYTE   4,  8,  2,  0,$1B,  1,  7,$81,$18,  1,  6,$81,$15,  1,  2,  9,$10,  8, $A,$40
+        BYTE $1A,  0, $A,  4,  1,  0,  6,  4,  1,  0,$1E,  2,  6,  0,$10,  8,  3,$84,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        BYTE $FF,$FF,$FF,$FF,$FF,$FF
 
     ORG     $F000
     INCLUDE "BOOM.NAS"
 
 
-DUMMY:      .BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+DUMMY:      BYTE $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
 ; ---------------------------------------------------------------------------
 
 IRQ:                    
         RTI
 ; ---------------------------------------------------------------------------
-        .WORD NMI
-        .WORD RESET
-        .WORD IRQ
+        WORD NMI
+        WORD RESET
+        WORD IRQ
 
-        .END
+        END
